@@ -9,3 +9,5 @@ Daily activity tracking app by Julien Malenfant.
 
 ## Potential Future Features
 - Integrated Pomodoro timer
+- Graph screen of time spent on tasks over time
+- Setting weekly targets
