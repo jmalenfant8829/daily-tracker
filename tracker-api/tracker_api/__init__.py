@@ -1,18 +1,21 @@
 from flask import Flask
-from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from tracker_api.config import Config
 
-from .config import Config
+db = SQLAlchemy()
+migrate = Migrate()
 
-# set app config
-load_dotenv()
-app = Flask(__name__)
-app.config.from_object(Config)
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
 
-# initialize db
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+    # initialize db
+    db.init_app(app)
+    migrate.init_app(app, db)
 
-# avoid circular import
-from . import routes, models
+    #from tracker_api import routes
+    from tracker_api.data_access import sqlalchemy
+    
+    return app
+
