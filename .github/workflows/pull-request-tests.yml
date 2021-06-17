@@ -71,6 +71,6 @@ jobs:
 
       - name: Run tests
         run: |
-          virtualenv env
+          venv .venv
           source .venv/bin/activate
           pytest tracker_api/tests/
