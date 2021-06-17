@@ -8,6 +8,11 @@ on:
      - main
     paths:
       - 'tracker-api/**'
+  pull_request:
+    branches:
+     - main
+    paths:
+      - 'tracker-api/**'
   workflow_dispatch:
 
 jobs:
