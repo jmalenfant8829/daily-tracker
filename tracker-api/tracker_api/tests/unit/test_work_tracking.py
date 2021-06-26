@@ -76,29 +76,3 @@ def test_timetable_fails_recording_time_given_negative_time(timetable, work_time
     with pytest.raises(ValueError):
         work_times[date(2021, 3, 20)]['task1']['minutes_spent'] = -20
         timetable.record_work_time(work_times)
-
-# def test_record_time_user_spent_on_tasks(timetable, work_times):
-#     """
-#     given valid user and tasks
-#     when time spent on tasks is recorded
-#     then the times are recorded successfully
-#     """
-
-#     timetable.record_work_time(work=work_times)
-    
-#     day = work_times[0]["day"]
-#     recorded_time = timetable.work_week(year=day.year, week=day.isocalendar()[1])
-#     assert(recorded_time["task1"]["Mon"] is 20 and recorded_time["task2"]["Tue"] is 40)
-
-# def test_fail_recording_time_with_nonexistent_tasks(timetable, work_times):
-#     """
-#     given valid user and tasks
-#     when attempting to record time on a nonexistent task
-#     the times fail to be recorded
-#     """
-#     timetable.add_task(name="task1")
-#     # 'task2' doesn't exist
-
-#     with pytest.raises(ValueError):
-#         timetable.record_work_time(work=work_times)
-        
