@@ -31,16 +31,17 @@ def db(app):
 def work_times():
     day = date(2021, 3, 20)
 
-    work_times = [
-        {
-            "task": "task1",
-            "day": day,
-            "time_spent": 40,
+    work_times = {
+        day: {
+            'task1': {
+                "minutes_spent": 40,
+            }
         },
-        {
-            "task": "task2",
-            "day": day + timedelta(days=1),
-            "time_spent": 20,
+        day + timedelta(days=1): {
+            'task2': {
+                "minutes_spent": 20,
+            },
         },
-    ]
+    }
+
     return work_times
