@@ -1,3 +1,5 @@
+import datetime
+from tracker_api.data_access.data_access import DataAccessError
 
 class Timetable:
     """
@@ -12,7 +14,21 @@ class Timetable:
         self.data_access.add_task(task)
 
     def record_work_time(self, work):
+        """
+        Records time spent on tasks as long as input is valid
+        """
+        # before saving, validate work dict is in correct format (days -> tasks -> time spent)
+        try:
+            for day, tasks in work.items():
+                for task, task_info in tasks.items():
+                    if task_info['minutes_spent'] < 0:
+                        raise ValueError("Minutes spent cannot be negative")
+        except (KeyError, AttributeError):
+            raise ValueError("Work time input is not formatted properly")
+            
         self.data_access.record_work_time(work)
+        self.data_access.commit()
+
 
     def work_week(self, year, week):
         return self.data_access.work_week(year, week)
@@ -27,3 +43,13 @@ class Task:
         self.name = name
         self.active = active
         self.user = user
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        if not name:
+            raise ValueError("Task name cannot be empty")
+        self._name = name

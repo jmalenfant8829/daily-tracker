@@ -1,6 +1,7 @@
-# a "service layer" of sorts for data access - meant to be easily mocked out / changed without affecting the core domain objects
+# a "service layer" of sorts for data access
 # definitely abstraction overkill for a little side project like this, but i'm trying to practice decoupling infrastructure and app code.
-# it also spares time changing orm access code all around the app when i change the schema.
+# it also spares time changing orm access code all around the app if i change the schema.
+# 
 # as a bonus, i'm thinking of ripping out the sqlalchemy db access to get some practice with nosql,
 #   so this allows me to easily switch it out if i choose to.
 
@@ -42,6 +43,7 @@ class SQLAlchemyDataAccess:
             .join(TaskModel.user)\
             .filter_by(username=user.username)
 
+        # build dictionary from query results
         nested_dict = lambda: defaultdict(nested_dict)
         work_times = nested_dict()
         for work_time in work_times_query:
