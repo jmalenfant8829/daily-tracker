@@ -54,7 +54,7 @@ def test_404_returns_json_error_response(cli):
     assert json["data"] == None
 
 
-def test_get_work_week(db, cli, work_times, recorded_timetable):
+def test_get_work_week(db, cli, recorded_timetable):
     """
     given recorded times on tasks over a week
     when querying for that work week
@@ -72,4 +72,14 @@ def test_get_work_week(db, cli, work_times, recorded_timetable):
     assert json["data"][next_day]["task2"]["minutes_spent"] == 20
 
 
-# test bad date input
+def test_work_week_bad_date_input(db, cli, recorded_timetable):
+    """
+    given recorded times on tasks over a week
+    when attempting to query for a week that does not exist
+    then the endpoint will produce an error
+    """
+    # the 69th of march does not exist
+    res = cli.get("/" + recorded_timetable.user.username + "/work-tracking/2021/3/69")
+
+    assert res.get_json()["status"] == "error"
+    assert res.status_code == 400

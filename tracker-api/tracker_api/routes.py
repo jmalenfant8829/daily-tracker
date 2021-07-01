@@ -7,7 +7,7 @@ from tracker_api.user import User
 from tracker_api.timetable import Timetable
 from tracker_api.helpers import date_keys_to_strings
 
-DATE_INPUT_NOT_NUMBERS_ERR_MSG = "Year, month, and day must be numbers"
+DATE_INPUT_INVALID_ERR_MSG = "Date input must be numbers representing a valid date"
 DATA_RETRIEVAL_ERR_MSG = "Error occurred while attempting to retrieve data"
 
 work_tracking_bp = Blueprint("work-tracking", __name__)
@@ -28,11 +28,12 @@ def work_week(username, year, month, day):
         year = int(year)
         month = int(month)
         day = int(day)
+        start_date = date(year=year, month=month, day=day)
     except ValueError:
         return {
             "status": "error",
             "data": None,
-            "message": DATE_INPUT_NOT_NUMBERS_ERR_MSG,
+            "message": DATE_INPUT_INVALID_ERR_MSG,
         }, 400
 
     data_access = current_app.config["DATA_ACCESS"]()
@@ -41,7 +42,6 @@ def work_week(username, year, month, day):
 
     # attempt to get work times for 7 days from the date specified
     try:
-        start_date = date(year=year, month=month, day=day)
         recorded_times = timetable.work_week(start_date)
     except DataAccessError:
         return {
