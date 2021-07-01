@@ -1,10 +1,12 @@
 import datetime
-from tracker_api.data_access.data_access import DataAccessError
+from tracker_api.data_access.exc import DataAccessError
+
 
 class Timetable:
     """
     Represents a work log that users can record time on for various custom tasks
     """
+
     def __init__(self, user, data_access) -> None:
         self.user = user
         self.data_access = data_access
@@ -12,6 +14,7 @@ class Timetable:
     def add_task(self, name):
         task = Task(name=name, active=True, user=self.user)
         self.data_access.add_task(task)
+        self.data_access.commit()
 
     def record_work_time(self, work):
         """
@@ -21,17 +24,16 @@ class Timetable:
         try:
             for day, tasks in work.items():
                 for task, task_info in tasks.items():
-                    if task_info['minutes_spent'] < 0:
+                    if task_info["minutes_spent"] < 0:
                         raise ValueError("Minutes spent cannot be negative")
         except (KeyError, AttributeError):
             raise ValueError("Work time input is not formatted properly")
-            
-        self.data_access.record_work_time(work)
+
+        self.data_access.record_work_time(self.user, work)
         self.data_access.commit()
 
-
-    def work_week(self, year, week):
-        return self.data_access.work_week(year, week)
+    def work_week(self, day):
+        return self.data_access.work_week(user=self.user, start=day)
 
 
 class Task:
@@ -39,6 +41,7 @@ class Task:
     A task user can log time on.
     May be active (currently on the user's timetable), or inactive (not currently on the timetable)
     """
+
     def __init__(self, name, active, user) -> None:
         self.name = name
         self.active = active

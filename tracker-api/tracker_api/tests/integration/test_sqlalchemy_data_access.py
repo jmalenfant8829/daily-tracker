@@ -142,6 +142,6 @@ def test_query_work_week(db, data_access, user, work_times):
     data_access.record_work_time(user, work_times)
     data_access.commit()
     
-    recorded_time = data_access.work_week(user=user, start = day)
+    recorded_time = data_access.work_week(user=user, start=day)
     assert(recorded_time[day]["task1"]['minutes_spent'] == 40)
     assert(recorded_time[day + timedelta(days=1)]["task2"]['minutes_spent'] == 20)
