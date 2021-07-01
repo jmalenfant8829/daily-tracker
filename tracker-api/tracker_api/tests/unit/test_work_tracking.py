@@ -7,8 +7,7 @@ from datetime import date
 
 # dummy class to avoid needing the database for unit tests
 class DataAccessStub:
-
-    def record_work_time(self, work):
+    def record_work_time(self, user, work):
         pass
 
     def work_week(self, year, week):
@@ -17,17 +16,20 @@ class DataAccessStub:
     def commit(self):
         pass
 
+
 @pytest.fixture
 def user():
-    data_access=DataAccessStub()
-    return User(username="alfonse", password_hash='secrethash', data_access=data_access)
+    data_access = DataAccessStub()
+    return User(username="alfonse", password_hash="secrethash", data_access=data_access)
+
 
 @pytest.fixture
 def timetable(user):
-    data_access=DataAccessStub()
+    data_access = DataAccessStub()
     test_timetable = Timetable(user=user, data_access=data_access)
-    
+
     return test_timetable
+
 
 def test_creates_valid_task(user):
     """
@@ -35,8 +37,9 @@ def test_creates_valid_task(user):
     when creating a task
     task is created successfully
     """
-    task = Task('my-task', True, user)
-    assert(task.active is True)
+    task = Task("my-task", True, user)
+    assert task.active is True
+
 
 def test_empty_task_name_is_invalid(user):
     """
@@ -45,7 +48,8 @@ def test_empty_task_name_is_invalid(user):
     task fails validation
     """
     with pytest.raises(ValueError):
-        task = Task('', True, user)
+        task = Task("", True, user)
+
 
 def test_timetable_records_time_given_valid_input(timetable, work_times):
     """
@@ -56,6 +60,7 @@ def test_timetable_records_time_given_valid_input(timetable, work_times):
     # no exception should be thrown
     timetable.record_work_time(work_times)
 
+
 def test_timetable_fails_recording_time_given_incorrect_format(timetable):
     """
     given an improperly formatted work times dictionary
@@ -63,9 +68,8 @@ def test_timetable_fails_recording_time_given_incorrect_format(timetable):
     time recording does not pass validation
     """
     with pytest.raises(ValueError):
-        timetable.record_work_time({
-            "asdf": "asdf"
-        })
+        timetable.record_work_time({"asdf": "asdf"})
+
 
 def test_timetable_fails_recording_time_given_negative_time(timetable, work_times):
     """
@@ -74,5 +78,5 @@ def test_timetable_fails_recording_time_given_negative_time(timetable, work_time
     time recording does not pass validation
     """
     with pytest.raises(ValueError):
-        work_times[date(2021, 3, 20)]['task1']['minutes_spent'] = -20
+        work_times[date(2021, 3, 20)]["task1"]["minutes_spent"] = -20
         timetable.record_work_time(work_times)
