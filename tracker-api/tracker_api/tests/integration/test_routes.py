@@ -10,17 +10,11 @@ faker = Faker()
 
 
 @pytest.fixture
-def cli(app):
-    return app.test_client()
-
-
-@pytest.fixture
 def user(app):
     profile = faker.simple_profile()
     data_access_class = app.config["DATA_ACCESS"]
     test_user = User(
         username=profile["username"],
-        password_hash=faker.password(),
         data_access=data_access_class(),
     )
     return test_user
@@ -29,7 +23,7 @@ def user(app):
 @pytest.fixture
 def recorded_timetable(app, user, work_times):
     """timetable with recorded work"""
-    user.save()
+    user.save(password="testpass")
 
     timetable = Timetable(user, user.data_access)
     for _, task_dict in work_times.items():

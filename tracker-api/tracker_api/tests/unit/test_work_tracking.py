@@ -20,7 +20,7 @@ class DataAccessStub:
 @pytest.fixture
 def user():
     data_access = DataAccessStub()
-    return User(username="alfonse", password_hash="secrethash", data_access=data_access)
+    return User(username="alfonse", data_access=data_access)
 
 
 @pytest.fixture

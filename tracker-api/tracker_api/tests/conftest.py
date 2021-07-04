@@ -4,17 +4,19 @@ from datetime import date, timedelta
 from tracker_api import create_app, db as _db
 from tracker_api.config import TestConfig
 
-# flask fixture structure derived from https://diegoquintanav.github.io/flask-contexts.html 
+# flask fixture structure derived from https://diegoquintanav.github.io/flask-contexts.html
+
 
 @pytest.fixture
 def app():
     test_app = create_app(TestConfig)
     context = test_app.app_context()
     context.push()
-    
+
     yield test_app
 
     context.pop()
+
 
 @pytest.fixture
 def db(app):
@@ -27,18 +29,25 @@ def db(app):
     _db.session.remove()
     _db.drop_all()
 
+
+@pytest.fixture
+def cli(app):
+    return app.test_client()
+
+
 @pytest.fixture
 def work_times():
     day = date(2021, 3, 20)
 
     work_times = {
         day: {
-            'task1': {
+            "task1": {
                 "minutes_spent": 40,
             }
         },
-        day + timedelta(days=1): {
-            'task2': {
+        day
+        + timedelta(days=1): {
+            "task2": {
                 "minutes_spent": 20,
             },
         },
