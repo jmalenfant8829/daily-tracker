@@ -41,6 +41,14 @@ class SQLAlchemyDataAccess:
         else:
             return None
 
+    def hashed_password(self, user):
+        """get user's password hash"""
+        db_user = UserModel.query.filter_by(username=user.username).first()
+        if db_user:
+            return db_user.hash
+        else:
+            return None
+
     def add_task(self, task):
         db_user = UserModel.query.filter_by(username=task.user.username).first()
 

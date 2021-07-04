@@ -167,3 +167,16 @@ def test_get_user_by_username(db, data_access, user):
     """
     data_access.add_user(user, "secretpasswordhash")
     assert data_access.user_by_username(user.username).username == user.username
+
+
+def test_hash_user_password_on_registration(db, data_access, user):
+    """
+    given existing user
+    when registering a new user
+    user's password will be hashed
+    """
+    password = "testpassword"
+    user.save(password=password)
+
+    # password_correct() checks the hashed value from the db
+    assert user.password_correct(password) is True

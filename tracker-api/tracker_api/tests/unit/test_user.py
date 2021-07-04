@@ -1,6 +1,7 @@
 import pytest
 from tracker_api.user import User
 from tracker_api.tests.conftest import DataAccessStub
+from werkzeug.security import generate_password_hash
 
 
 def test_fail_create_user_with_blank_username():
@@ -25,5 +26,14 @@ def test_save_user_with_minimum_len_password():
     user.save(password="8chrpass")
 
 
-# test hashing/verifying
-# password len/reqs
+class HashPasswordDAStub(DataAccessStub):
+    def hashed_password(self, **kwargs):
+        return generate_password_hash("testpassword")
+
+
+def test_verify_hashed_password():
+    password = "testpassword"
+
+    user = User(username="asdf", data_access=HashPasswordDAStub())
+    user.save(password=password)
+    assert user.password_correct(password=password) == True

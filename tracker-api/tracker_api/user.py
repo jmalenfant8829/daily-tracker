@@ -1,3 +1,4 @@
+from werkzeug.security import generate_password_hash, check_password_hash
 from tracker_api.data_access.exc import DataAccessError
 
 MIN_PASSWORD_LEN = 8
@@ -23,12 +24,9 @@ class User:
             raise ValueError(USERNAME_REQUIRED_ERR_MSG)
         self._username = username
 
-    def verify_password(self, password):
-        hashed_password = None
-        # self.data_access.add_user(username, hash_val)
-
-    def login(self, hash):
-        pass
+    def password_correct(self, password):
+        hashed_password = self.data_access.hashed_password(user=self)
+        return check_password_hash(hashed_password, password)
 
     def save(self, password):
         """
@@ -42,7 +40,8 @@ class User:
             raise ValueError(PASSWORD_SHORT_ERR_MSG)
 
         try:
-            self.data_access.add_user(user=self, password_hash="secretpasswordhash")
+            password_hash = generate_password_hash(password)
+            self.data_access.add_user(user=self, password_hash=password_hash)
             self.data_access.commit()
         except DataAccessError as e:
             self.data_access.rollback()
