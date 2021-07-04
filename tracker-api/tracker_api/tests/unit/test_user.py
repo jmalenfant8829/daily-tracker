@@ -14,5 +14,16 @@ def test_fail_save_user_with_blank_password():
         user.save(password="")
 
 
+def test_fail_save_user_with_short_password():
+    user = User(username="asdf", data_access=DataAccessStub())
+    with pytest.raises(ValueError):
+        user.save(password="2tiny")
+
+
+def test_save_user_with_minimum_len_password():
+    user = User(username="asdf", data_access=DataAccessStub())
+    user.save(password="8chrpass")
+
+
 # test hashing/verifying
 # password len/reqs
