@@ -55,22 +55,22 @@ def test_fail_register_blank_password(app, db, cli):
     assert res.status_code == 400
 
 
-def test_get_auth_token(app, db, cli):
-    """
-    given existing user
-    when asking for an authentication token with valid credentials
-    then an authentication token is provided
-    """
-    username, password = "testuser", "testpassword"
-    cli.post(
-        "/register",
-        json={"username": username, "password": password},
-    )
+# def test_get_auth_token(app, db, cli):
+#     """
+#     given existing user
+#     when asking for an authentication token with valid credentials
+#     then an authentication token is provided
+#     """
+#     username, password = "testuser", "testpassword"
+#     cli.post(
+#         "/register",
+#         json={"username": username, "password": password},
+#     )
 
-    res = cli.post(
-        "/token",
-        json={"username": username, "password": password},
-    )
+#     res = cli.post(
+#         "/token",
+#         json={"username": username, "password": password},
+#     )
 
-    assert res.get_json().get("token") != None
-    assert res.status_code == 200
+#     assert res.get_json().get("token") != None
+#     assert res.status_code == 200
