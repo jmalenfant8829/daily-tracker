@@ -1,5 +1,9 @@
 from tracker_api.data_access.exc import DataAccessError
 
+MIN_PASSWORD_LEN = 8
+USERNAME_REQUIRED_ERR_MSG = "Username cannot be empty"
+PASSWORD_REQUIRED_ERR_MSG = "Password cannot be empty"
+
 
 class User:
     def __init__(self, username, data_access):
@@ -13,7 +17,7 @@ class User:
     @username.setter
     def username(self, username):
         if not username:
-            raise ValueError("Username cannot be empty")
+            raise ValueError(USERNAME_REQUIRED_ERR_MSG)
         self._username = username
 
     def verify_password(self, password):
@@ -27,6 +31,10 @@ class User:
         """
         save user to persistent storage
         """
+
+        if not password:
+            raise ValueError(PASSWORD_REQUIRED_ERR_MSG)
+
         try:
             self.data_access.add_user(user=self, password_hash="secretpasswordhash")
             self.data_access.commit()

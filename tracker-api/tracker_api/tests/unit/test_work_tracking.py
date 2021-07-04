@@ -1,20 +1,10 @@
 # unit tests logic for time recording
 
 import pytest
+from datetime import date
 from tracker_api.user import User
 from tracker_api.timetable import Timetable, Task
-from datetime import date
-
-# dummy class to avoid needing the database for unit tests
-class DataAccessStub:
-    def record_work_time(self, user, work):
-        pass
-
-    def work_week(self, year, week):
-        pass
-
-    def commit(self):
-        pass
+from tracker_api.tests.conftest import DataAccessStub
 
 
 @pytest.fixture

@@ -54,3 +54,18 @@ def work_times():
     }
 
     return work_times
+
+
+# dummy class to avoid needing the database for unit tests
+class DataAccessStub:
+    def add_user(self, **kwargs):
+        pass
+
+    def commit(self, **kwargs):
+        pass
+
+    def record_work_time(self, **kwargs):
+        pass
+
+    def work_week(self, **kwargs):
+        pass
