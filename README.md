@@ -1,4 +1,4 @@
-[![Backend API Tests](https://github.com/jmalenfant8829/daily-tracker/actions/workflows/api-pr-tests.yml/badge.svg)] [![Web Frontend Tests](https://github.com/jmalenfant8829/daily-tracker/actions/workflows/web-frontend-pr-tests.yml/badge.svg)]
+![Backend API Tests](https://github.com/jmalenfant8829/daily-tracker/actions/workflows/api-pr-tests.yml/badge.svg) ![Web Frontend Tests](https://github.com/jmalenfant8829/daily-tracker/actions/workflows/web-frontend-pr-tests.yml/badge.svg)
 
 # Daily Tracker
 
