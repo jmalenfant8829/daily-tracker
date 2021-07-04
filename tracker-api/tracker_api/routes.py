@@ -2,6 +2,13 @@
 
 from datetime import date
 from flask import Blueprint, current_app, request
+from flask_jwt_extended import (
+    create_access_token,
+    create_refresh_token,
+    get_jwt_identity,
+    jwt_required,
+    JWTManager,
+)
 from tracker_api.data_access.exc import DataAccessError
 from tracker_api.user import User
 from tracker_api.timetable import Timetable
