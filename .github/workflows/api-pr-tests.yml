@@ -1,5 +1,5 @@
 
-name: Tracker API Continuous Integration Testing
+name: Tracker API CI Testing
 
 # test on change to tracker API on main branch, or by manual trigger
 on:
