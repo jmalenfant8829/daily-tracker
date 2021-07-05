@@ -1,6 +1,6 @@
 # Daily Tracker Web Frontend
 
-Frontend website for the activity tracking app. Implemented using React.
+Frontend website for the activity tracking app. Implemented using React and TypeScript.
 
 ## Scripts
 
