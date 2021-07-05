@@ -1,9 +1,10 @@
+
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import App from './App';
+import Header from './Header';
 
 test('app renders header', () => {
-  render(<App />);
+  render(<Header />);
   const linkElement = screen.getByText(/time tracker/i);
   expect(linkElement).toBeInTheDocument();
 });
