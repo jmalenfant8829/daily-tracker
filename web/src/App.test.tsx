@@ -4,6 +4,6 @@ import App from './App';
 
 test('app renders header', () => {
   render(<App />);
-  const linkElement = screen.getByText(/time tracker/i);
+  const linkElement = screen.getByRole('heading');
   expect(linkElement).toBeInTheDocument();
 });

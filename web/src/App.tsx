@@ -1,13 +1,16 @@
 // base component
 
-import Header from "./components/Header/Header";
+import Header from './components/Header/Header';
+import Landing from './pages/Landing';
+import 'bulma/css/bulma.min.css';
 
-function App() {
+const App = () => {
   return (
     <div>
-      <Header/>
+      <Header />
+      <Landing />
     </div>
   );
-}
+};
 
 export default App;
