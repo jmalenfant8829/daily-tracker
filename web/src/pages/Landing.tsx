@@ -4,7 +4,7 @@
 
 import React from 'react';
 import 'bulma/css/bulma.min.css';
-import { Button } from 'react-bulma-components';
+import { Button, Columns, Heading, Container } from 'react-bulma-components';
 import SignupModal from '../components/SignupModal/SignupModal';
 
 const Landing = () => {
@@ -15,16 +15,25 @@ const Landing = () => {
   }
 
   return (
-    <div>
-      <h1>Time Tracker</h1>
-      <Button onClick={showSignupModal}>Register</Button>
+    <Container>
+      <Heading textAlign="center">Time Tracker</Heading>
+
+      <Columns>
+        <Columns.Column></Columns.Column>
+        <Columns.Column>
+          <Button size="large" fullwidth={true} onClick={showSignupModal}>
+            Register
+          </Button>
+        </Columns.Column>
+      </Columns>
+
       <SignupModal
         show={showSignup}
         onClose={() => {
           setShowSignup(false);
         }}
       />
-    </div>
+    </Container>
   );
 };
 
