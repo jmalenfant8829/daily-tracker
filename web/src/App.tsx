@@ -1,5 +1,6 @@
 // base component
 
+import React from 'react';
 import Header from './components/Header/Header';
 import Landing from './pages/Landing';
 import 'bulma/css/bulma.min.css';

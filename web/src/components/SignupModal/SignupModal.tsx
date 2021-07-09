@@ -2,7 +2,6 @@
 // Description: Modal window for user registration
 // First version: 2021/07/05
 
-import React from 'react';
 import { Button, Form, Modal } from 'react-bulma-components';
 
 interface SignupModalProps {
