@@ -27,6 +27,16 @@ test('opens registration modal on button click', () => {
   userEvent.click(button);
 
   rerender(<Landing />);
-  const field = screen.getByLabelText(/username/i);
+  const field = screen.getByTestId('register-form-submit-button');
+  expect(field).toBeInTheDocument();
+});
+
+test('opens login modal on button click', () => {
+  const { rerender } = render(<Landing />);
+  const button = screen.getByRole('button', { name: /log in/i });
+  userEvent.click(button);
+
+  rerender(<Landing />);
+  const field = screen.getByTestId('login-form-submit-button');
   expect(field).toBeInTheDocument();
 });

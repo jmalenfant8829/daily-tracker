@@ -29,5 +29,3 @@ test('header shows login button when not signed in', () => {
   const loginButton = screen.getByRole('link', { name: /log in/i });
   expect(loginButton).toBeInTheDocument();
 });
-
-// show login/register links if not logged in
