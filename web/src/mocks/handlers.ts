@@ -5,7 +5,7 @@ import { rest } from 'msw';
 // 'existing' users
 const users = [{ username: 'gordin', password: 'but-maars' }];
 // sample auth token
-const testToken = 'my-secret-token';
+export const testToken = 'my-secret-token';
 
 // creates api url
 const backendPath = (path: string) => {

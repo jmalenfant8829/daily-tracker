@@ -35,12 +35,12 @@ const App = () => {
       });
 
       // set current user
-      const data = await res.json();
+      const jsonData = await res.json();
       if (res.status === 200) {
         const user = { username: username };
         setUser(user);
         localStorage.setItem(CURRENT_USER, JSON.stringify(user));
-        localStorage.setItem(AUTH_TOKEN, data.token);
+        localStorage.setItem(AUTH_TOKEN, jsonData.data.token);
         loginSuccessful = true;
       }
     } catch (err) {

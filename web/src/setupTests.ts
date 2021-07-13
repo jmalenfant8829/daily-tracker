@@ -7,7 +7,7 @@ import { server } from './mocks/server';
 
 beforeAll(() => server.listen());
 afterEach(() => {
-  window.localStorage.clear();
+  localStorage.clear();
   server.resetHandlers();
 });
 afterAll(() => server.close());
