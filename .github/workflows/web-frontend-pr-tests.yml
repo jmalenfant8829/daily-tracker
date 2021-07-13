@@ -22,6 +22,9 @@ jobs:
     defaults:
       run:
         working-directory: ./web
+    
+    env:
+      REACT_APP_BACKEND_API: http://localhost
 
     steps:
       - uses: actions/checkout@v2
@@ -30,7 +33,6 @@ jobs:
         uses: actions/cache@v2
         env:
           cache-name: cache-node-modules
-          REACT_APP_BACKEND_API: http://localhost
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
