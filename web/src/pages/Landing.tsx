@@ -9,7 +9,11 @@ import SignupModal from '../components/SignupModal/SignupModal';
 import TitledModal from '../components/TitledModal/TitledModal';
 import LoginForm from '../components/LoginForm/LoginForm';
 
-const Landing = () => {
+interface LandingProps {
+  handleLogin: (username: string, password: string) => Promise<boolean>;
+}
+
+const Landing = (props: LandingProps) => {
   const [showSignup, setShowSignup] = React.useState(false);
   const [showLogin, setShowLogin] = React.useState(false);
 
@@ -49,7 +53,7 @@ const Landing = () => {
         onClose={() => {
           setShowLogin(false);
         }}
-        children={<LoginForm />}
+        children={<LoginForm handleLogin={props.handleLogin} />}
         title="Log In"
       />
     </Container>

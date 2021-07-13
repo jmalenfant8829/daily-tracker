@@ -8,7 +8,6 @@ function renderApp(user?: User) {
   if (user) {
     localStorage.setItem(CURRENT_USER, JSON.stringify(user));
   }
-
   return render(<App />);
 }
 
