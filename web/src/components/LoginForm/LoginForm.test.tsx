@@ -9,11 +9,10 @@ import { testToken } from '../../mocks/handlers';
 //test('login form should reject blank username submission')n
 
 test('redirects to home page upon successful login', async () => {
-  const { rerender } = render(<App />);
+  render(<App />);
   userEvent.click(screen.getByRole('button', { name: /log in/i }));
-  rerender(<App />);
 
-  userEvent.type(screen.getByLabelText(/username/i), 'gordin');
+  userEvent.type(await screen.findByLabelText(/username/i), 'gordin');
   userEvent.type(screen.getByLabelText(/password/i), 'but-maars');
   userEvent.click(screen.getByTestId('login-form-submit-button'));
 
@@ -25,25 +24,22 @@ test('redirects to home page upon successful login', async () => {
 });
 
 test('reports error message upon failing to log in', async () => {
-  const { rerender } = render(<App />);
+  render(<App />);
   userEvent.click(screen.getByRole('button', { name: /log in/i }));
-  rerender(<App />);
 
-  userEvent.type(screen.getByLabelText(/username/i), 'gordin');
+  userEvent.type(await screen.findByLabelText(/username/i), 'gordin');
   userEvent.type(screen.getByLabelText(/password/i), 'wrong-password');
   userEvent.click(screen.getByTestId('login-form-submit-button'));
-  rerender(<App />);
 
   const error = await screen.findByText(/invalid login or password./i);
   expect(error).toBeInTheDocument();
 });
 
 test('sets user and auth token in localstorage on login', async () => {
-  const { rerender } = render(<App />);
+  render(<App />);
   userEvent.click(screen.getByRole('button', { name: /log in/i }));
-  rerender(<App />);
 
-  userEvent.type(screen.getByLabelText(/username/i), 'gordin');
+  userEvent.type(await screen.findByLabelText(/username/i), 'gordin');
   userEvent.type(screen.getByLabelText(/password/i), 'but-maars');
   userEvent.click(screen.getByTestId('login-form-submit-button'));
 

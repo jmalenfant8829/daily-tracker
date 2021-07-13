@@ -26,34 +26,20 @@ test('shows landing page at site root', () => {
   expect(header).toBeInTheDocument();
 });
 
-test('opens registration modal on button click', () => {
-  const { rerender } = renderLanding();
+test('opens registration modal on button click', async () => {
+  renderLanding();
   const button = screen.getByRole('button', { name: /register/i });
   userEvent.click(button);
 
-  rerender(
-    <Landing
-      handleLogin={async (u, p) => {
-        return true;
-      }}
-    />
-  );
-  const field = screen.getByTestId('register-form-submit-button');
+  const field = await screen.findByTestId('register-form-submit-button');
   expect(field).toBeInTheDocument();
 });
 
-test('opens login modal on button click', () => {
-  const { rerender } = renderLanding();
+test('opens login modal on button click', async () => {
+  renderLanding();
   const button = screen.getByRole('button', { name: /log in/i });
   userEvent.click(button);
 
-  rerender(
-    <Landing
-      handleLogin={async (u, p) => {
-        return true;
-      }}
-    />
-  );
-  const field = screen.getByTestId('login-form-submit-button');
+  const field = await screen.findByTestId('login-form-submit-button');
   expect(field).toBeInTheDocument();
 });

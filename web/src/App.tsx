@@ -20,6 +20,12 @@ const App = () => {
     storedUser ? JSON.parse(storedUser) : null
   );
 
+  function logOutUser() {
+    localStorage.removeItem(CURRENT_USER);
+    localStorage.removeItem(AUTH_TOKEN);
+    setUser(null);
+  }
+
   // attempts to log in a user given a username/password
   async function logInUser(username: string, password: string) {
     // issue api call for token
@@ -59,7 +65,11 @@ const App = () => {
 
   return (
     <div>
-      <Header user={user || undefined} />
+      <Header
+        user={user || undefined}
+        handleLogin={logInUser}
+        handleLogout={logOutUser}
+      />
       {pageContent}
     </div>
   );
