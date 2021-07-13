@@ -1,8 +1,7 @@
-// File: Landing.tsx
+// File: SignupModal.tsx
 // Description: Modal window for user registration
 // First version: 2021/07/05
 
-import React from 'react';
 import { Button, Form, Modal } from 'react-bulma-components';
 
 interface SignupModalProps {
@@ -35,7 +34,9 @@ const SignupModal = (props: SignupModalProps) => {
 
             <Form.Field>
               <Form.Control>
-                <Button color="link">Register</Button>
+                <Button color="link" data-testid="register-form-submit-button">
+                  Register
+                </Button>
               </Form.Control>
             </Form.Field>
           </form>

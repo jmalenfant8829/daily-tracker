@@ -6,12 +6,23 @@ import React from 'react';
 import 'bulma/css/bulma.min.css';
 import { Button, Columns, Heading, Container } from 'react-bulma-components';
 import SignupModal from '../components/SignupModal/SignupModal';
+import TitledModal from '../components/TitledModal/TitledModal';
+import LoginForm from '../components/LoginForm/LoginForm';
 
-const Landing = () => {
+interface LandingProps {
+  handleLogin: (username: string, password: string) => Promise<boolean>;
+}
+
+const Landing = (props: LandingProps) => {
   const [showSignup, setShowSignup] = React.useState(false);
+  const [showLogin, setShowLogin] = React.useState(false);
 
   function showSignupModal() {
     setShowSignup(true);
+  }
+
+  function showLoginModal() {
+    setShowLogin(true);
   }
 
   return (
@@ -24,6 +35,9 @@ const Landing = () => {
           <Button size="large" fullwidth={true} onClick={showSignupModal}>
             Register
           </Button>
+          <Button size="large" fullwidth={true} onClick={showLoginModal}>
+            Log In
+          </Button>
         </Columns.Column>
       </Columns>
 
@@ -32,6 +46,15 @@ const Landing = () => {
         onClose={() => {
           setShowSignup(false);
         }}
+      />
+
+      <TitledModal
+        show={showLogin}
+        onClose={() => {
+          setShowLogin(false);
+        }}
+        children={<LoginForm handleLogin={props.handleLogin} />}
+        title="Log In"
       />
     </Container>
   );
