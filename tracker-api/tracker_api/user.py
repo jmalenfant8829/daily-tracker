@@ -1,10 +1,7 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from tracker_api.data_access.exc import DataAccessError
-from itsdangerous import (
-    TimedJSONWebSignatureSerializer as Serializer,
-    BadSignature,
-    SignatureExpired,
-)
+import jwt
+from datetime import datetime, timedelta
 
 MIN_PASSWORD_LEN = 8
 USERNAME_REQUIRED_ERR_MSG = "Username cannot be empty"
@@ -38,22 +35,27 @@ class User:
 
     def generate_auth_token(self, secret_key, expiration=1200):
         """generate an authentication token. default expiry is 20 minutes"""
-        s = Serializer(secret_key, expires_in=expiration)
-        return s.dumps({"username": self.username})
+        token = jwt.encode(
+            {
+                "username": self.username,
+                "exp": datetime.utcnow() + timedelta(seconds=expiration),
+            },
+            secret_key,
+        )
+        return token
 
     @staticmethod
     def verify_auth_token(token, secret_key):
         """verify authentication token. None if invalid, username of user if valid"""
-        s = Serializer(secret_key)
         try:
-            data = s.loads(token)
-        except SignatureExpired:
+            payload = jwt.decode(token, secret_key)
+        except jwt.ExpiredSignatureError:
             # expired token
             return None
-        except BadSignature:
+        except jwt.InvalidTokenError:
             # invalid token
             return None
-        return data["username"]
+        return payload["username"]
 
     def save(self, password):
         """

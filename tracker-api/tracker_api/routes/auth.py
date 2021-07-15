@@ -44,7 +44,7 @@ def token():
             token = user.generate_auth_token(current_app.config["SECRET_KEY"])
             return {
                 "status": "success",
-                "data": {"token": token.decode("ascii")},
+                "data": {"token": token},
                 "message": None,
             }, 200
         else:
