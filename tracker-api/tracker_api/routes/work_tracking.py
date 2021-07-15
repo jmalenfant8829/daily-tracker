@@ -2,21 +2,11 @@
 
 from datetime import date
 from flask import Blueprint, current_app, request
-from flask_jwt_extended import (
-    create_access_token,
-    create_refresh_token,
-    get_jwt_identity,
-    jwt_required,
-    JWTManager,
-)
 from tracker_api.data_access.exc import DataAccessError
 from tracker_api.user import User
 from tracker_api.timetable import Timetable
 from tracker_api.helpers import date_keys_to_strings
-
-DATE_INPUT_INVALID_ERR_MSG = "Date input must be numbers representing a valid date"
-DATA_RETRIEVAL_ERR_MSG = "Error occurred while attempting to retrieve data"
-MISSING_JSON_BODY_ERR_MSG = "Must specify JSON request body"
+from .err_msgs import *
 
 work_tracking_bp = Blueprint("work-tracking", __name__)
 
@@ -63,39 +53,3 @@ def work_week(username, year, month, day):
         "data": date_keys_to_strings(recorded_times),
         "message": None,
     }, 200
-
-
-@work_tracking_bp.route("/register", methods=["POST"])
-def register():
-    """registers a new user given a username and password"""
-    # verify required request data was sent
-    data = request.get_json()
-
-    if not data:
-        return {
-            "status": "error",
-            "data": None,
-            "message": MISSING_JSON_BODY_ERR_MSG,
-        }, 400
-
-    username, password = data.get("username"), data.get("password")
-    if not username or not password:
-        return {
-            "status": "error",
-            "data": None,
-            "message": "Must specify a username and password",
-        }, 400
-
-    # add the new user
-    try:
-        data_access = current_app.config["DATA_ACCESS"]()
-        new_user = User(username=username, data_access=data_access)
-        new_user.save(password=password)
-    except ValueError as e:
-        return {
-            "status": "error",
-            "data": None,
-            "message": str(e),
-        }, 400
-
-    return {"status": "success", "data": None, "message": None}, 200

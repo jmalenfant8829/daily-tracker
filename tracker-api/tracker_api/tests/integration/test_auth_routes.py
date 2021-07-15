@@ -1,4 +1,4 @@
-# tests for login/signup/jwt token routes for authentication
+# tests for signup/token routes for authentication
 from faker import Faker
 
 faker = Faker()
@@ -55,22 +55,52 @@ def test_fail_register_blank_password(app, db, cli):
     assert res.status_code == 400
 
 
-# def test_get_auth_token(app, db, cli):
-#     """
-#     given existing user
-#     when asking for an authentication token with valid credentials
-#     then an authentication token is provided
-#     """
-#     username, password = "testuser", "testpassword"
-#     cli.post(
-#         "/register",
-#         json={"username": username, "password": password},
-#     )
+def test_fail_register_with_no_request_data(app, db, cli):
+    """should not register without providing JSON request body"""
+    res = cli.post(
+        "/register",
+    )
 
-#     res = cli.post(
-#         "/token",
-#         json={"username": username, "password": password},
-#     )
+    assert res.status_code == 400
 
-#     assert res.get_json().get("token") != None
-#     assert res.status_code == 200
+
+def test_get_auth_token(app, db, cli):
+    """
+    given existing user
+    when asking for an authentication token with valid credentials
+    then an authentication token is provided
+    """
+    username, password = "testuser", "testpassword"
+    cli.post(
+        "/register",
+        json={"username": username, "password": password},
+    )
+
+    res = cli.post(
+        "/token",
+        json={"username": username, "password": password},
+    )
+
+    assert res.get_json().get("data").get("token") != None
+    assert res.status_code == 200
+
+
+def test_fail_get_auth_token_given_wrong_password(app, db, cli):
+    """
+    given existing user
+    when asking for auth token with wrong password
+    then the response will not contain an auth token
+    """
+    username, password = "testuser", "testpassword"
+    cli.post(
+        "/register",
+        json={"username": username, "password": password},
+    )
+
+    res = cli.post(
+        "/token",
+        json={"username": username, "password": "wrongpassword"},
+    )
+
+    assert res.get_json().get("data") is None
+    assert res.status_code == 401
