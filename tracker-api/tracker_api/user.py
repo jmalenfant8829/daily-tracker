@@ -9,6 +9,7 @@ PASSWORD_REQUIRED_ERR_MSG = "Password cannot be empty"
 PASSWORD_SHORT_ERR_MSG = (
     "Password must be at least " + str(MIN_PASSWORD_LEN) + " characters long"
 )
+JWT_ALGORITHM = "HS256"
 
 
 class User:
@@ -41,6 +42,7 @@ class User:
                 "exp": datetime.utcnow() + timedelta(seconds=expiration),
             },
             secret_key,
+            algorithm=JWT_ALGORITHM,
         )
         return token
 
@@ -48,11 +50,11 @@ class User:
     def verify_auth_token(token, secret_key):
         """verify authentication token. None if invalid, username of user if valid"""
         try:
-            payload = jwt.decode(token, secret_key)
+            payload = jwt.decode(token, secret_key, algorithms=[JWT_ALGORITHM])
         except jwt.ExpiredSignatureError:
             # expired token
             return None
-        except jwt.InvalidTokenError:
+        except jwt.InvalidTokenError as e:
             # invalid token
             return None
         return payload["username"]
