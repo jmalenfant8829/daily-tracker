@@ -131,6 +131,26 @@ class SQLAlchemyDataAccess:
             tasks.append(Task(task.name, task.active, user))
         return tasks
 
+    def modify_task(self, task):
+        """modify a user's task"""
+        db_task = (
+            TaskModel.query.filter_by(name=task.name)
+            .join(UserModel)
+            .filter_by(username=task.user.username)
+            .first()
+        )
+
+        if not db_task:
+            raise DataAccessError(
+                'Task "'
+                + task.name
+                + '" does not exist for user "'
+                + task.user.username
+                + '"'
+            )
+
+        db_task.active = task.active
+
     def commit(self):
         try:
             db.session.commit()
