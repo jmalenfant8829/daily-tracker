@@ -8,7 +8,7 @@ auth_bp = Blueprint("auth", __name__)
 
 
 def json_data_required(f):
-    """view decorator requiring json data in request body"""
+    """route decorator requiring json data in request body"""
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -18,6 +18,43 @@ def json_data_required(f):
                 "data": None,
                 "message": MISSING_JSON_BODY_ERR_MSG,
             }, 400
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
+def jwt_token_required(f):
+    """route decorator requiring a valid auth token"""
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        auth_header = request.headers.get("Authorization")
+        token = None
+
+        if auth_header:
+            try:
+                token = auth_header.split()[1]
+            except IndexError:
+                pass
+
+        if token:
+            username = User.verify_auth_token(
+                token, current_app.config.get("SECRET_KEY")
+            )
+            if not username:
+                return {
+                    "status": "error",
+                    "data": None,
+                    "message": MISSING_TOKEN_ERR_MSG,
+                }, 401
+        else:
+            return {
+                "status": "error",
+                "data": None,
+                "message": INVALID_TOKEN_ERR_MSG,
+            }, 401
+
+        kwargs["username"] = username
         return f(*args, **kwargs)
 
     return decorated_function

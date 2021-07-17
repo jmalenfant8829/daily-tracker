@@ -1,7 +1,29 @@
 # tests for signup/token routes for authentication
+import pytest
 from faker import Faker
 
 faker = Faker()
+
+
+@pytest.fixture
+def registered_user(app, db, cli):
+    username, password = "testuser", "testpassword"
+    cli.post(
+        "/register",
+        json={"username": username, "password": password},
+    )
+    return username, password
+
+
+@pytest.fixture
+def auth_token(app, db, cli, registered_user):
+    username, password = registered_user
+    res = cli.post(
+        "/token",
+        json={"username": username, "password": password},
+    )
+
+    return res.get_json().get("data").get("token")
 
 
 def test_register_new_user(app, db, cli):
@@ -104,3 +126,36 @@ def test_fail_get_auth_token_given_wrong_password(app, db, cli):
 
     assert res.get_json().get("data") is None
     assert res.status_code == 401
+
+
+def test_access_protected_route_with_access_token(app, db, cli, auth_token):
+    """
+    given a user with a valid access token
+    when requesting a route which requires an access token
+    the resource will be accessible
+    """
+    res = cli.get(
+        "/work-tracking/2021/4/20",
+        headers={"Authorization": "Bearer " + auth_token},
+    )
+    assert res.status_code == 200
+    assert res.get_json().get("status") == "success"
+
+
+def test_fail_access_protected_route_without_token(app, db, cli, registered_user):
+    username, _ = registered_user
+    res = cli.get("/work-tracking/2021/4/20")
+
+    assert res.status_code == 401
+    assert res.get_json().get("status") == "error"
+
+
+def test_fail_access_protected_route_with_invalid_token(app, db, cli, registered_user):
+    username, _ = registered_user
+    res = cli.get(
+        "/work-tracking/2021/4/20",
+        headers={"Authorization": "Bearer " + "thisisnotavalidtoken"},
+    )
+
+    assert res.status_code == 401
+    assert res.get_json().get("status") == "error"
