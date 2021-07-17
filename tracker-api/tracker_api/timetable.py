@@ -29,7 +29,7 @@ class Timetable:
         except (KeyError, AttributeError):
             raise ValueError("Work time input is not formatted properly")
 
-        self.data_access.record_work_time(self.user, work)
+        self.data_access.record_work_time(user=self.user, work=work)
         self.data_access.commit()
 
     def work_week(self, day):

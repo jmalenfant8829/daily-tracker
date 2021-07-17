@@ -4,7 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import date
 from tracker_api.config import Config
-from tracker_api.routes import work_tracking_bp
+from tracker_api.routes.work_tracking import work_tracking_bp
+from tracker_api.routes.auth import auth_bp
 from tracker_api.error_handling import register_error_handlers
 
 db = SQLAlchemy()
@@ -27,6 +28,7 @@ def create_app(config_class=Config):
 
     # set routes
     app.register_blueprint(work_tracking_bp)
+    app.register_blueprint(auth_bp)
     register_error_handlers(app)
 
     return app

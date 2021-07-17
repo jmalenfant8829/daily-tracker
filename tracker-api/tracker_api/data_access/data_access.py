@@ -17,15 +17,37 @@ from tracker_api.data_access.sqlalchemy import (
     db,
 )
 from tracker_api.data_access.exc import DataAccessError
+from tracker_api.user import User
 
 DAYS_IN_WEEK = 7
 
+DUPLICATE_USER_ERR_MSG = "User already exists"
+
 
 class SQLAlchemyDataAccess:
-    def add_user(self, user):
-        db_user = UserModel(username=user.username, hash=user.hash)
+    def add_user(self, user, password_hash):
+        if UserModel.query.filter_by(username=user.username).first() is not None:
+            raise DataAccessError(DUPLICATE_USER_ERR_MSG)
+
+        db_user = UserModel(username=user.username, hash=password_hash)
         db.session.add(db_user)
         return db_user
+
+    def user_by_username(self, username):
+        """query for user by username"""
+        db_user = UserModel.query.filter_by(username=username).first()
+        if db_user:
+            return User(username=username, data_access=self)
+        else:
+            return None
+
+    def hashed_password(self, user):
+        """get user's password hash"""
+        db_user = UserModel.query.filter_by(username=user.username).first()
+        if db_user:
+            return db_user.hash
+        else:
+            return None
 
     def add_task(self, task):
         db_user = UserModel.query.filter_by(username=task.user.username).first()
@@ -103,7 +125,7 @@ class SQLAlchemyDataAccess:
         try:
             db.session.commit()
         except SQLAlchemyError as e:
-            raise DataAccessError
+            raise DataAccessError(str(e))
 
     def rollback(self):
         db.session.rollback()
