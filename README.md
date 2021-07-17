@@ -5,10 +5,10 @@
 Daily activity tracking app by Julien Malenfant.
 
 ## TODO
-- Implement preliminary web frontend
+- Add work tracking functionality to web frontend
 - Improve README (installation instructions, etc.)
 
 ## Potential Future Features
 - Integrated Pomodoro timer
-- Graph screen of time spent on tasks over time
+- Generate graphs of time spent on tasks over time
 - Setting weekly targets
