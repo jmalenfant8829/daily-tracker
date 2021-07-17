@@ -90,3 +90,35 @@ def test_work_week_bad_date_input(db, cli, auth_token, recorded_timetable):
 
     assert res.get_json()["status"] == "error"
     assert res.status_code == 400
+
+
+def test_add_new_task(db, cli, user, auth_token):
+    """
+    given existing user
+    when adding new task
+    new task is created
+    """
+    res = cli.post(
+        "/task",
+        headers={"Authorization": "Bearer " + auth_token},
+        json={"name": "my-new-task"},
+    )
+
+    assert res.status_code == 200
+    timetable = Timetable(user, user.data_access)
+    assert "my-new-task" in [task.name for task in timetable.tasks()]
+
+
+def test_do_not_add_new_task_without_name_given(db, cli, user, auth_token):
+    """
+    given existing user
+    when adding new task without providing name
+    new task is not created
+    """
+    res = cli.post(
+        "/task",
+        headers={"Authorization": "Bearer " + auth_token},
+        json={"asdf": "jkl;"},
+    )
+
+    assert res.status_code == 400

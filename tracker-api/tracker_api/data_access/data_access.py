@@ -18,6 +18,7 @@ from tracker_api.data_access.sqlalchemy import (
 )
 from tracker_api.data_access.exc import DataAccessError
 from tracker_api.user import User
+from tracker_api.timetable import Task
 
 DAYS_IN_WEEK = 7
 
@@ -86,7 +87,7 @@ class SQLAlchemyDataAccess:
 
     def record_work_time(self, user, work):
         """
-        Saves work time to DB by adding/updating a daily task time record
+        Records work time to DB by adding/updating a daily task time record
         """
         # get user's tasks / task times
         db_user = (
@@ -120,6 +121,15 @@ class SQLAlchemyDataAccess:
                 except ValueError:
                     # user has no task with that name; skip it
                     pass
+
+    def tasks(self, user):
+        """retrieve all tasks for a user"""
+        db_tasks = UserModel.query.filter_by(username=user.username).first().tasks
+
+        tasks = []
+        for task in db_tasks:
+            tasks.append(Task(task.name, task.active, user))
+        return tasks
 
     def commit(self):
         try:

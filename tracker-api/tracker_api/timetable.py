@@ -33,7 +33,12 @@ class Timetable:
         self.data_access.commit()
 
     def work_week(self, day):
+        """retrieves time entries for a week of work, starting from the given day"""
         return self.data_access.work_week(user=self.user, start=day)
+
+    def tasks(self):
+        """retrieves all tasks that belong to the timetable's user"""
+        return self.data_access.tasks(user=self.user)
 
 
 class Task:
