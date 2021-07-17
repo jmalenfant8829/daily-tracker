@@ -62,6 +62,6 @@ def test_does_not_verify_expired_auth_token():
     user = User(username="asdf", data_access=HashPasswordDAStub())
     user.save(password=password)
 
-    token = user.generate_auth_token("test-key", 1)
-    time.sleep(1.5)
+    token = user.generate_auth_token("test-key", 0)
+    time.sleep(2)
     assert User.verify_auth_token(token, "test-key") is None
