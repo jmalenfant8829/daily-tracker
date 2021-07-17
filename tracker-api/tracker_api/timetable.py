@@ -33,13 +33,27 @@ class Timetable:
         self.data_access.commit()
 
     def work_week(self, day):
+        """retrieves time entries for a week of work, starting from the given day"""
         return self.data_access.work_week(user=self.user, start=day)
+
+    def tasks(self):
+        """retrieves all tasks that belong to the timetable's user"""
+        return self.data_access.tasks(user=self.user)
+
+    def modify_task(self, task):
+        """modifies a task"""
+        try:
+            self.data_access.modify_task(task=task)
+        except DataAccessError as e:
+            raise ValueError(str(e))
+
+        self.data_access.commit()
 
 
 class Task:
     """
     A task user can log time on.
-    May be active (currently on the user's timetable), or inactive (not currently on the timetable)
+    May be active (appears on the user's timetable), or inactive (not currently on the timetable)
     """
 
     def __init__(self, name, active, user) -> None:

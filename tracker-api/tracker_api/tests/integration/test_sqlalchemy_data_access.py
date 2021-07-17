@@ -180,3 +180,35 @@ def test_hash_user_password_on_registration(db, data_access, user):
 
     # password_correct() checks the hashed value from the db
     assert user.password_correct(password) is True
+
+
+def test_retrieve_all_tasks(db, data_access, user):
+    """
+    given existing user with tasks
+    when querying for user's tasks
+    all of the user's tasks will be retrieved
+    """
+    user.save("testpassword")
+    data_access.add_task(Task("task1", True, user))
+    data_access.add_task(Task("task2", True, user))
+
+    tasks = data_access.tasks(user)
+    assert "task1" in [task.name for task in tasks]
+    assert "task2" in [task.name for task in tasks]
+
+
+def test_retrieve_only_tasks_belonging_to_one_user(db, data_access, user):
+    """
+    given multiple users with tasks
+    when querying for a user's tasks
+    only that user's tasks are retrieved
+    """
+    user.save("testpassword")
+    user2 = User("user2", data_access)
+    user2.save("testpassword2")
+    data_access.add_task(Task("task1", True, user))
+    data_access.add_task(Task("task2", True, user2))
+
+    tasks = data_access.tasks(user)
+    assert "task1" in [task.name for task in tasks]
+    assert "task2" not in [task.name for task in tasks]
