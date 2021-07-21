@@ -15,12 +15,6 @@ interface EditableTableOptions extends TableOptions<{}> {
   updateData: Function;
 }
 
-// placeholder for api call
-const sampleAPIData = {
-  '2021-04-20': { task1: 40 },
-  '2021-04-21': { task2: 20 }
-};
-
 const DAYS_IN_WEEK = 7;
 
 // retrieves dates through week

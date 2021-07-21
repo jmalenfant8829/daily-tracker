@@ -1,8 +1,19 @@
 import { screen, render } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from 'react-query';
+
 import Home from './Home';
 
+function renderHomePage() {
+  const queryClient = new QueryClient();
+  render(
+    <QueryClientProvider client={queryClient}>
+      <Home />
+    </QueryClientProvider>
+  );
+}
+
 test('should render home page header', () => {
-  render(<Home />);
+  renderHomePage();
   const heading = screen.getByRole('heading', {
     name: /weekly time tracking/i
   });
@@ -10,7 +21,7 @@ test('should render home page header', () => {
 });
 
 test('should render weekly time table', () => {
-  render(<Home />);
-  const headingCell = screen.getByRole('cell', { name: /sunday/i });
+  renderHomePage();
+  const headingCell = screen.getByRole('columnheader', { name: /sunday/i });
   expect(headingCell).toBeInTheDocument();
 });
