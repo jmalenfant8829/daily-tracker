@@ -11,6 +11,7 @@ import { APIWorkTimeData } from '../../interfaces';
 interface WorkTimeTableProps {
   startDate: Date;
   workTimeData: APIWorkTimeData;
+  updateData: Function;
 }
 
 interface EditableTableOptions extends TableOptions<{}> {
@@ -47,10 +48,6 @@ function dayOfWeekAsString(dayIndex: number) {
 }
 
 const WorkTimeTable = (props: WorkTimeTableProps) => {
-  const updateData = (columnId: string, rowIndex: number, value: string) => {
-    alert(value);
-  };
-
   const parseAPIData = (data: APIWorkTimeData) => {
     let tableData: any[] = [];
     for (const task in data) {
@@ -83,6 +80,7 @@ const WorkTimeTable = (props: WorkTimeTableProps) => {
     [props.startDate]
   );
 
+  const updateData = props.updateData;
   const tableOptions: EditableTableOptions = { columns, data, updateData };
   const workTable = useTable(tableOptions);
 

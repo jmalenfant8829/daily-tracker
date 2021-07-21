@@ -29,6 +29,10 @@ const Home = () => {
     }).then((res) => res.json())
   );
 
+  const updateData = (columnId: string, rowIndex: number, value: string) => {
+    alert(value);
+  };
+
   let timetableContent;
   if (error) {
     timetableContent = (
@@ -40,7 +44,11 @@ const Home = () => {
     timetableContent = <Notification>Loading table</Notification>;
   } else {
     timetableContent = (
-      <WorkTimeTable startDate={startDate} workTimeData={data.data} />
+      <WorkTimeTable
+        startDate={startDate}
+        workTimeData={data.data}
+        updateData={updateData}
+      />
     );
   }
 
