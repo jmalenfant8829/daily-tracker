@@ -39,7 +39,9 @@ const Home = () => {
   } else if (isLoading) {
     timetableContent = <Notification>Loading table</Notification>;
   } else {
-    timetableContent = <WorkTimeTable startDate={startDate} />;
+    timetableContent = (
+      <WorkTimeTable startDate={startDate} workTimeData={data.data} />
+    );
   }
 
   return (

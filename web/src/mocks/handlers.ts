@@ -68,8 +68,8 @@ export const handlers = [
       const date1 = new Date(year, month - 1, day + 1);
       const date2 = new Date(year, month - 1, day + 2);
       const workTimeData = {
-        [date1.toISOString().split('T')[0]]: { task1: 20 },
-        [date2.toISOString().split('T')[0]]: { task2: 40 }
+        task1: [{ date: date1.toISOString().split('T')[0], minutes_spent: 20 }],
+        task2: [{ date: date2.toISOString().split('T')[0], minutes_spent: 40 }]
       };
 
       return res(

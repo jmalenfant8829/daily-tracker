@@ -20,8 +20,10 @@ test('should render home page header', () => {
   expect(heading).toBeInTheDocument();
 });
 
-test('should render weekly time table', () => {
+test('should render weekly time table', async () => {
   renderHomePage();
-  const headingCell = screen.getByRole('columnheader', { name: /sunday/i });
+  const headingCell = await screen.findByRole('columnheader', {
+    name: /sunday/i
+  });
   expect(headingCell).toBeInTheDocument();
 });

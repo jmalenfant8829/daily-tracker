@@ -6,9 +6,11 @@ import React from 'react';
 import { Table } from 'react-bulma-components';
 import { useTable, Column, TableOptions } from 'react-table';
 import EditableCell from '../EditableCell/EditableCell';
+import { APIWorkTimeData } from '../../interfaces';
 
 interface WorkTimeTableProps {
   startDate: Date;
+  workTimeData: APIWorkTimeData;
 }
 
 interface EditableTableOptions extends TableOptions<{}> {
@@ -44,18 +46,27 @@ function dayOfWeekAsString(dayIndex: number) {
   );
 }
 
-// sample dataset
-const getData = () => {
-  const today = new Date().toISOString().split('T')[0];
-  return [{ task: 'task1', [today]: '80' }];
-};
-
 const WorkTimeTable = (props: WorkTimeTableProps) => {
   const updateData = (columnId: string, rowIndex: number, value: string) => {
     alert(value);
   };
 
-  const data: Array<any> = React.useMemo(() => getData(), []);
+  const parseAPIData = (data: APIWorkTimeData) => {
+    let tableData: any[] = [];
+    for (const task in data) {
+      let row: any = { task: task };
+      for (const entry of data[task]) {
+        row[entry.date] = entry.minutes_spent;
+      }
+      tableData.push(row);
+    }
+    return tableData;
+  };
+
+  const data: Array<any> = React.useMemo(
+    () => parseAPIData(props.workTimeData),
+    [props.workTimeData]
+  );
   // table columns
   const columns: Array<Column> = React.useMemo(
     () =>
