@@ -16,37 +16,46 @@ const Home = () => {
   // e.g. http://localhost/work-tracking/2021/4/20
   const requestURL =
     process.env.REACT_APP_BACKEND_API +
-    '/work-tracking/' +
-    startDate.getFullYear() +
-    '/' +
-    (startDate.getMonth() + 1) +
-    '/' +
-    startDate.getDate();
+    ('/work-tracking/' + startDate.getFullYear() + '/') +
+    (startDate.getMonth() + 1 + '/' + startDate.getDate());
 
-  const { isLoading, error, data } = useQuery('workTimeData', () =>
-    fetch(requestURL, {
-      headers: { Authorization: 'Bearer ' + localStorage.getItem(AUTH_TOKEN) }
-    }).then((res) => res.json())
-  );
+  const workTimeQuery = useQuery('workTimeData', async () => {
+    const authToken = localStorage.getItem(AUTH_TOKEN);
+    const res = await fetch(requestURL, {
+      headers: { Authorization: 'Bearer ' + authToken }
+    });
+
+    if (!res.ok) {
+      throw new Error('Error retrieving table data');
+    }
+
+    return res.json();
+  });
 
   const updateData = (columnId: string, rowIndex: number, value: string) => {
     alert(value);
   };
 
   let timetableContent;
-  if (error) {
+  if (workTimeQuery.error) {
     timetableContent = (
       <Notification color="danger">
         Error occurred fetching timetable data.
       </Notification>
     );
-  } else if (isLoading) {
+  } else if (workTimeQuery.isLoading) {
     timetableContent = <Notification>Loading table</Notification>;
-  } else {
+  } else if (workTimeQuery.data['data']) {
     timetableContent = (
       <WorkTimeTable
         startDate={startDate}
-        workTimeData={data.data}
+        workTimeData={workTimeQuery.data['data']}
+        tasks={[
+          { name: 'task1', active: true },
+          { name: 'task2', active: true },
+          { name: 'task3', active: true },
+          { name: 'task4', active: false }
+        ]}
         updateData={updateData}
       />
     );

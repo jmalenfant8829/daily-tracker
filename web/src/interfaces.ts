@@ -8,3 +8,8 @@ export interface User {
 export interface APIWorkTimeData {
   [task: string]: [{ date: string; minutes_spent: number }];
 }
+
+export interface Task {
+  name: string;
+  active: boolean;
+}

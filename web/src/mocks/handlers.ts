@@ -18,7 +18,7 @@ const invalidTokenResponse = (res: ResponseComposition, ctx: RestContext) => {
     ctx.json({
       status: 'error',
       data: null,
-      message: null
+      message: 'Invalid token.'
     })
   );
 };

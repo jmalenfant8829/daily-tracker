@@ -6,11 +6,12 @@ import React from 'react';
 import { Table } from 'react-bulma-components';
 import { useTable, Column, TableOptions } from 'react-table';
 import EditableCell from '../EditableCell/EditableCell';
-import { APIWorkTimeData } from '../../interfaces';
+import { APIWorkTimeData, Task } from '../../interfaces';
 
 interface WorkTimeTableProps {
   startDate: Date;
   workTimeData: APIWorkTimeData;
+  tasks: Task[];
   updateData: Function;
 }
 
@@ -48,21 +49,27 @@ function dayOfWeekAsString(dayIndex: number) {
 }
 
 const WorkTimeTable = (props: WorkTimeTableProps) => {
-  const parseAPIData = (data: APIWorkTimeData) => {
+  const parseTableData = (workTimeData: APIWorkTimeData, tasks: Task[]) => {
     let tableData: any[] = [];
-    for (const task in data) {
-      let row: any = { task: task };
-      for (const entry of data[task]) {
-        row[entry.date] = entry.minutes_spent;
+
+    for (const task of tasks) {
+      if (task.active) {
+        let row: any = { task: task.name };
+        if (task.name in workTimeData) {
+          for (const entry of workTimeData[task.name]) {
+            row[entry.date] = entry.minutes_spent;
+          }
+        }
+        tableData.push(row);
       }
-      tableData.push(row);
     }
+
     return tableData;
   };
 
   const data: Array<any> = React.useMemo(
-    () => parseAPIData(props.workTimeData),
-    [props.workTimeData]
+    () => parseTableData(props.workTimeData, props.tasks),
+    [props.workTimeData, props.tasks]
   );
   // table columns
   const columns: Array<Column> = React.useMemo(

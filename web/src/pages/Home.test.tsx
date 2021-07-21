@@ -1,9 +1,12 @@
 import { screen, render } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { AUTH_TOKEN } from '../constants';
+import { testToken } from '../mocks/handlers';
 
 import Home from './Home';
 
 function renderHomePage() {
+  localStorage.setItem(AUTH_TOKEN, testToken);
   const queryClient = new QueryClient();
   render(
     <QueryClientProvider client={queryClient}>
