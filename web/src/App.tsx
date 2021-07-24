@@ -5,14 +5,19 @@ import 'bulma/css/bulma.min.css';
 import Header from './components/Header/Header';
 import Landing from './pages/Landing';
 import Home from './pages/Home';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { User } from './interfaces';
 import { CURRENT_USER, AUTH_TOKEN } from './constants';
 
 // use mock server for development
 if (process.env.NODE_ENV === 'development') {
   const { worker } = require('./mocks/browser');
+  const { initMockStorage } = require('./mocks/handlers');
+  initMockStorage();
   worker.start();
 }
+
+const queryClient = new QueryClient();
 
 const App = () => {
   const storedUser = localStorage.getItem(CURRENT_USER);
@@ -58,7 +63,11 @@ const App = () => {
   // render homepage if logged in, landing if not
   let pageContent;
   if (user) {
-    pageContent = <Home />;
+    pageContent = (
+      <QueryClientProvider client={queryClient}>
+        <Home />;
+      </QueryClientProvider>
+    );
   } else {
     pageContent = <Landing handleLogin={logInUser} />;
   }

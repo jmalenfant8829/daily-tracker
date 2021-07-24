@@ -64,6 +64,7 @@ const LoginForm = (props: LoginFormProps) => {
           <Form.Input
             id="password"
             placeholder="Password"
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
