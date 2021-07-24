@@ -17,11 +17,26 @@ const EditableCell = (props: EditableCellProps) => {
   }
 
   function handleBlur(e: React.FocusEvent) {
-    props.updateData(props.column.id, props.row.index, value);
+    let numValue;
+
+    if (value.toString().trim() === '') {
+      numValue = 0;
+    } else {
+      numValue = Number(value.toString().trim());
+    }
+
+    if (!isNaN(numValue)) {
+      props.updateData(props.column.id, props.row.values['task'], numValue);
+    }
   }
 
   return (
-    <Form.Input onBlur={handleBlur} onChange={handleChange} value={value} />
+    <Form.Input
+      onBlur={handleBlur}
+      onChange={handleChange}
+      type="text"
+      value={value}
+    />
   );
 };
 

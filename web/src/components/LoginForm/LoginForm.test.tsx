@@ -5,6 +5,16 @@ import userEvent from '@testing-library/user-event';
 import App from '../../App';
 import { AUTH_TOKEN, CURRENT_USER } from '../../constants';
 import { testToken } from '../../mocks/handlers';
+import { setLogger } from 'react-query';
+
+// mute console error from react-query calls
+beforeEach(() => {
+  setLogger({
+    log: () => {},
+    warn: () => {},
+    error: () => {}
+  });
+});
 
 //test('login form should reject blank username submission')n
 

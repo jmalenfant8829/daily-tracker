@@ -1,11 +1,32 @@
 // mock handlers for mock-service-worker
 
 import { rest, ResponseComposition, RestContext } from 'msw';
+import { listenerCount } from 'stream';
+import { APIWorkTimeData } from '../interfaces';
 
 // 'existing' users
 const users = [{ username: 'gordin', password: 'but-maars' }];
 // sample auth token
 export const testToken = 'my-secret-token';
+
+// session storage keys
+const WORK_TIMES_KEY = 'MSW_WORK_TIMES';
+const TASK_LIST_KEY = 'MSW_TASK_LIST';
+
+// session storage values for testing
+export const initMockStorage = () => {
+  const workTimes = [
+    { task: 'task1', dayOffset: 1, minutes_spent: 20 },
+    { task: 'task2', dayOffset: 2, minutes_spent: 40 }
+  ];
+  sessionStorage.setItem(WORK_TIMES_KEY, JSON.stringify(workTimes));
+
+  const tasks = [
+    { name: 'task1', active: true },
+    { name: 'task2', active: true }
+  ];
+  sessionStorage.setItem(TASK_LIST_KEY, JSON.stringify(tasks));
+};
 
 // creates api url
 const backendPath = (path: string) => {
@@ -65,12 +86,28 @@ export const handlers = [
       const year = parseInt(req.params.year);
       const month = parseInt(req.params.month);
       const day = parseInt(req.params.day);
-      const date1 = new Date(year, month - 1, day + 1);
-      const date2 = new Date(year, month - 1, day + 2);
-      const workTimeData = {
-        task1: [{ date: date1.toISOString().split('T')[0], minutes_spent: 20 }],
-        task2: [{ date: date2.toISOString().split('T')[0], minutes_spent: 40 }]
-      };
+
+      // assemble work time response for session storage
+      const storageWorkTimes = sessionStorage.getItem(WORK_TIMES_KEY);
+      let workTimeData: APIWorkTimeData = {};
+      if (storageWorkTimes) {
+        const workTimes = JSON.parse(storageWorkTimes);
+        for (const workTime of workTimes) {
+          const date = new Date(year, month - 1, day + workTime.dayOffset);
+          const dateStr = date.toISOString().split('T')[0];
+
+          if (!workTimeData.hasOwnProperty(workTime.task)) {
+            workTimeData[workTime.task] = [
+              { date: dateStr, minutes_spent: workTime.minutes_spent }
+            ];
+          } else {
+            workTimeData[workTime.task].push({
+              date: dateStr,
+              minutes_spent: workTime.minutes_spent
+            });
+          }
+        }
+      }
 
       return res(
         ctx.status(200),
@@ -88,10 +125,8 @@ export const handlers = [
       return invalidTokenResponse(res, ctx);
     }
 
-    const tasks = [
-      { name: 'task1', active: true },
-      { name: 'task2', active: true }
-    ];
+    const storageTasks = sessionStorage.getItem(TASK_LIST_KEY);
+    const tasks = storageTasks ? JSON.parse(storageTasks) : [];
 
     return res(
       ctx.status(200),
@@ -101,5 +136,38 @@ export const handlers = [
         message: null
       })
     );
-  })
+  }),
+  rest.put(
+    backendPath('/work-tracking'),
+    (req: Record<string, any>, res, ctx) => {
+      if (req.headers.get('Authorization') !== 'Bearer ' + testToken) {
+        return invalidTokenResponse(res, ctx);
+      }
+
+      const storageWorkTimes = sessionStorage.getItem(WORK_TIMES_KEY);
+      let workTimes = storageWorkTimes ? JSON.parse(storageWorkTimes) : [];
+
+      for (const task in req.body) {
+        for (const { date, minutes_spent } of req.body[task]) {
+          const dayOffset = new Date(date + 'T00:00:00').getDay();
+          workTimes.push({
+            task: task,
+            dayOffset: dayOffset,
+            minutes_spent: minutes_spent
+          });
+        }
+      }
+
+      sessionStorage.setItem(WORK_TIMES_KEY, JSON.stringify(workTimes));
+
+      return res(
+        ctx.status(200),
+        ctx.json({
+          status: 'success',
+          data: null,
+          message: null
+        })
+      );
+    }
+  )
 ];

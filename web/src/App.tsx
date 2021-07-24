@@ -12,6 +12,8 @@ import { CURRENT_USER, AUTH_TOKEN } from './constants';
 // use mock server for development
 if (process.env.NODE_ENV === 'development') {
   const { worker } = require('./mocks/browser');
+  const { initMockStorage } = require('./mocks/handlers');
+  initMockStorage();
   worker.start();
 }
 
