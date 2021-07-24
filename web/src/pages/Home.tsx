@@ -77,6 +77,7 @@ const Home = () => {
       onSuccess: () => {
         // reset work time data to reflect posted data
         queryClient.invalidateQueries(WORK_TIME_QUERY);
+        setEditedTimes({});
       }
     }
   );
