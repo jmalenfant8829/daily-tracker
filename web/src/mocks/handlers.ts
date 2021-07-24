@@ -81,5 +81,25 @@ export const handlers = [
         })
       );
     }
-  )
+  ),
+  // get user's tasks
+  rest.get(backendPath('/task'), (req: Record<string, any>, res, ctx) => {
+    if (req.headers.get('Authorization') !== 'Bearer ' + testToken) {
+      return invalidTokenResponse(res, ctx);
+    }
+
+    const tasks = [
+      { name: 'task1', active: true },
+      { name: 'task2', active: true }
+    ];
+
+    return res(
+      ctx.status(200),
+      ctx.json({
+        status: 'success',
+        data: tasks,
+        message: null
+      })
+    );
+  })
 ];

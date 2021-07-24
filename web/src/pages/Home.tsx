@@ -13,13 +13,14 @@ const Home = () => {
   // which day the timetable starts with (default sunday of current week)
   const [startDate, setStartDate] = React.useState(getLastSunday());
 
-  // e.g. http://localhost/work-tracking/2021/4/20
-  const requestURL =
-    process.env.REACT_APP_BACKEND_API +
-    ('/work-tracking/' + startDate.getFullYear() + '/') +
-    (startDate.getMonth() + 1 + '/' + startDate.getDate());
-
+  // work time api query
   const workTimeQuery = useQuery('workTimeData', async () => {
+    // e.g. http://localhost/work-tracking/2021/4/20
+    const requestURL =
+      process.env.REACT_APP_BACKEND_API +
+      ('/work-tracking/' + startDate.getFullYear() + '/') +
+      (startDate.getMonth() + 1 + '/' + startDate.getDate());
+
     const authToken = localStorage.getItem(AUTH_TOKEN);
     const res = await fetch(requestURL, {
       headers: { Authorization: 'Bearer ' + authToken }
@@ -32,30 +33,39 @@ const Home = () => {
     return res.json();
   });
 
+  // task list api query
+  const taskListQuery = useQuery('taskListData', async () => {
+    const requestURL = process.env.REACT_APP_BACKEND_API + '/task';
+    const authToken = localStorage.getItem(AUTH_TOKEN);
+    const res = await fetch(requestURL, {
+      headers: { Authorization: 'Bearer ' + authToken }
+    });
+
+    if (!res.ok) {
+      throw new Error('Error retrieving task data');
+    }
+
+    return res.json();
+  });
+
   const updateData = (columnId: string, rowIndex: number, value: string) => {
     alert(value);
   };
-
   let timetableContent;
-  if (workTimeQuery.error) {
+  if (workTimeQuery.error || taskListQuery.error) {
     timetableContent = (
       <Notification color="danger">
         Error occurred fetching timetable data.
       </Notification>
     );
-  } else if (workTimeQuery.isLoading) {
+  } else if (workTimeQuery.isLoading || taskListQuery.isLoading) {
     timetableContent = <Notification>Loading table</Notification>;
-  } else if (workTimeQuery.data['data']) {
+  } else if (workTimeQuery.data['data'] && taskListQuery.data['data']) {
     timetableContent = (
       <WorkTimeTable
         startDate={startDate}
         workTimeData={workTimeQuery.data['data']}
-        tasks={[
-          { name: 'task1', active: true },
-          { name: 'task2', active: true },
-          { name: 'task3', active: true },
-          { name: 'task4', active: false }
-        ]}
+        tasks={taskListQuery.data['data']}
         updateData={updateData}
       />
     );

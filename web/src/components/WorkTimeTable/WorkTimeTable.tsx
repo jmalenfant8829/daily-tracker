@@ -51,7 +51,6 @@ function dayOfWeekAsString(dayIndex: number) {
 const WorkTimeTable = (props: WorkTimeTableProps) => {
   const parseTableData = (workTimeData: APIWorkTimeData, tasks: Task[]) => {
     let tableData: any[] = [];
-
     for (const task of tasks) {
       if (task.active) {
         let row: any = { task: task.name };
