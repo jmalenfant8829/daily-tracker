@@ -13,6 +13,7 @@ import { useQuery, useMutation, useQueryClient } from 'react-query';
 import WorkTimeTable from '../components/WorkTimeTable/WorkTimeTable';
 import TitledModal from '../components/TitledModal/TitledModal';
 import AddTaskForm from '../components/AddTaskForm/AddTaskForm';
+import RemoveTaskForm from '../components/RemoveTaskForm/RemoveTaskForm';
 import { getLastSunday } from '../helpers';
 import { AUTH_TOKEN } from '../constants';
 import { APIWorkTimeData, Task } from '../interfaces';
@@ -25,8 +26,9 @@ const Home = () => {
   const [startDate, setStartDate] = React.useState(getLastSunday());
   // user-edited times on the table which can then be POSTed
   const [editedTimes, setEditedTimes] = React.useState<APIWorkTimeData>({});
-  // toggle for showing 'add task' modal
+  // toggles for showing modals
   const [showAddTask, setShowAddTask] = React.useState(false);
+  const [showRemoveTask, setShowRemoveTask] = React.useState(false);
 
   const mounted = React.useRef(false);
 
@@ -40,6 +42,10 @@ const Home = () => {
 
   function showAddTaskModal() {
     setShowAddTask(true);
+  }
+
+  function showRemoveTaskModal() {
+    setShowRemoveTask(true);
   }
 
   // work time api query
@@ -225,6 +231,21 @@ const Home = () => {
           title="Add Task"
         />
         <Button onClick={showAddTaskModal}>Add Task</Button>
+
+        <TitledModal
+          show={showRemoveTask}
+          onClose={() => {
+            setShowRemoveTask(false);
+          }}
+          children={
+            <RemoveTaskForm
+              handleRemoveTask={handleRemoveTask}
+              tasks={taskListQuery.data['data']}
+            />
+          }
+          title="Add Task"
+        />
+        <Button onClick={showRemoveTaskModal}>Remove Task</Button>
       </>
     );
   }
@@ -237,6 +258,11 @@ const Home = () => {
   function handleActivateTask(taskName: string) {
     taskActiveMutation.mutate({ name: taskName, active: true });
     setShowAddTask(false);
+  }
+
+  function handleRemoveTask(taskName: string) {
+    taskActiveMutation.mutate({ name: taskName, active: false });
+    setShowRemoveTask(false);
   }
 
   return (
