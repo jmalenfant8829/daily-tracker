@@ -10,26 +10,31 @@ interface AddTaskFormProps {
 }
 
 const AddTaskForm = (props: AddTaskFormProps) => {
-  const [taskName, setTaskName] = React.useState('');
-  const inactiveTaskOptions = props.tasks.map((task) => {
-    if (!task.active) {
-      return (
-        <option key={task.name} value={task.name}>
-          {task.name}
-        </option>
-      );
-    }
-    return null;
+  const inactiveTasks = props.tasks.filter((task) => task.active === false);
+
+  const [newTaskName, setNewTaskName] = React.useState('');
+  const [selectedTaskName, setSelectedTaskName] = React.useState(
+    inactiveTasks.length > 0 ? inactiveTasks[0].name : ''
+  );
+  const inactiveTaskOptions = inactiveTasks.map((task) => {
+    return (
+      <option key={task.name} value={task.name}>
+        {task.name}
+      </option>
+    );
   });
 
   function handleAddTaskSubmit(e: React.FormEvent) {
     e.preventDefault();
-    props.handleAddTask(taskName);
+    props.handleAddTask(newTaskName);
   }
 
   function handleActivateTaskSubmit(e: React.FormEvent) {
     e.preventDefault();
-    props.handleActivateTask(taskName);
+
+    if (selectedTaskName.length > 0) {
+      props.handleActivateTask(selectedTaskName);
+    }
   }
 
   return (
@@ -41,8 +46,8 @@ const AddTaskForm = (props: AddTaskFormProps) => {
             <Form.Input
               id="task-name"
               placeholder="My new task"
-              value={taskName}
-              onChange={(e) => setTaskName(e.target.value)}
+              value={newTaskName}
+              onChange={(e) => setNewTaskName(e.target.value)}
             />
           </Form.Control>
         </Form.Field>
@@ -53,7 +58,12 @@ const AddTaskForm = (props: AddTaskFormProps) => {
       <form onSubmit={handleActivateTaskSubmit}>
         <Form.Field>
           <Form.Control>
-            <Form.Select>{inactiveTaskOptions}</Form.Select>
+            <Form.Select
+              value={selectedTaskName}
+              onChange={(e) => setSelectedTaskName(e.target.value)}
+            >
+              {inactiveTaskOptions}
+            </Form.Select>
           </Form.Control>
         </Form.Field>
 

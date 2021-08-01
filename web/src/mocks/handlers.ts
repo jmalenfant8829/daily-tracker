@@ -1,7 +1,7 @@
 // mock handlers for mock-service-worker
 
 import { rest, ResponseComposition, RestContext } from 'msw';
-import { APIWorkTimeData } from '../interfaces';
+import { APIWorkTimeData, Task } from '../interfaces';
 
 // 'existing' users
 const users = [{ username: 'gordin', password: 'but-maars' }];
@@ -22,7 +22,8 @@ export const initMockStorage = () => {
 
   const tasks = [
     { name: 'task1', active: true },
-    { name: 'task2', active: true }
+    { name: 'task2', active: true },
+    { name: 'task3', active: false }
   ];
   sessionStorage.setItem(TASK_LIST_KEY, JSON.stringify(tasks));
 };
@@ -157,6 +158,36 @@ export const handlers = [
       })
     );
   }),
+  // edit task
+  rest.patch(
+    backendPath('/task/:taskName'),
+    (req: Record<string, any>, res, ctx) => {
+      if (req.headers.get('Authorization') !== 'Bearer ' + testToken) {
+        return invalidTokenResponse(res, ctx);
+      }
+
+      const storageTasks = sessionStorage.getItem(TASK_LIST_KEY);
+      let tasks: Task[] = storageTasks ? JSON.parse(storageTasks) : [];
+
+      tasks.map((task) => {
+        if (task.name === req.params.taskName) {
+          task.active = req.body.active;
+        }
+        return task;
+      });
+
+      sessionStorage.setItem(TASK_LIST_KEY, JSON.stringify(tasks));
+
+      return res(
+        ctx.status(200),
+        ctx.json({
+          status: 'success',
+          data: null,
+          message: null
+        })
+      );
+    }
+  ),
   // update work times
   rest.put(
     backendPath('/work-tracking'),

@@ -64,12 +64,23 @@ test('should add new task via task addition modal', async () => {
   renderHomePage();
   const modalButton = await screen.findByRole('button', { name: /add task/i });
   userEvent.click(modalButton);
-  const field = await screen.findByLabelText(/task name/i);
-  userEvent.type(field, 'my-new-task');
-  const addButton = screen.getByRole('button', { name: /add new task/i });
-  userEvent.click(addButton);
+  userEvent.type(await screen.findByLabelText(/task name/i), 'my-new-task');
+  userEvent.click(screen.getByRole('button', { name: /add new task/i }));
 
   expect(
     await screen.findByRole('cell', { name: /my-new-task/i })
+  ).toBeInTheDocument();
+});
+
+test('should set inactive task active via task addition modal', async () => {
+  renderHomePage();
+  const modalButton = await screen.findByRole('button', { name: /add task/i });
+  userEvent.click(modalButton);
+  // inactive task 'task3' selected by default
+  userEvent.click(
+    await screen.findByRole('button', { name: /add existing task/i })
+  );
+  expect(
+    await screen.findByRole('cell', { name: /task3/i })
   ).toBeInTheDocument();
 });

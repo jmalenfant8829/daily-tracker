@@ -127,21 +127,29 @@ const Home = () => {
   );
 
   // set task active/inactive
-  const taskActiveMutation = useMutation(async (task: Task) => {
-    const requestURL =
-      process.env.REACT_APP_BACKEND_API +
-      ('/task/' + encodeURIComponent(task.name));
+  const taskActiveMutation = useMutation(
+    async (task: Task) => {
+      const requestURL =
+        process.env.REACT_APP_BACKEND_API +
+        ('/task/' + encodeURIComponent(task.name));
 
-    await fetch(requestURL, {
-      method: 'PATCH',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + localStorage.getItem(AUTH_TOKEN)
-      },
-      body: JSON.stringify({ active: task.active })
-    });
-  });
+      await fetch(requestURL, {
+        method: 'PATCH',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + localStorage.getItem(AUTH_TOKEN)
+        },
+        body: JSON.stringify({ active: task.active })
+      });
+    },
+    {
+      onSuccess: () => {
+        // reflect new task data
+        queryClient.invalidateQueries(TASK_LIST_QUERY);
+      }
+    }
+  );
 
   // when data is updated, add it to the edited times
   const updateData = (columnId: string, taskName: string, value: number) => {
