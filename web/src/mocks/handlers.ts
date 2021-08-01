@@ -1,7 +1,6 @@
 // mock handlers for mock-service-worker
 
 import { rest, ResponseComposition, RestContext } from 'msw';
-import { listenerCount } from 'stream';
 import { APIWorkTimeData } from '../interfaces';
 
 // 'existing' users
@@ -137,6 +136,28 @@ export const handlers = [
       })
     );
   }),
+  // add task
+  rest.post(backendPath('/task'), (req: Record<string, any>, res, ctx) => {
+    if (req.headers.get('Authorization') !== 'Bearer ' + testToken) {
+      return invalidTokenResponse(res, ctx);
+    }
+
+    const storageTasks = sessionStorage.getItem(TASK_LIST_KEY);
+    const tasks = storageTasks ? JSON.parse(storageTasks) : [];
+
+    tasks.push({ name: req.body.name, active: true });
+    sessionStorage.setItem(TASK_LIST_KEY, JSON.stringify(tasks));
+
+    return res(
+      ctx.status(200),
+      ctx.json({
+        status: 'success',
+        data: null,
+        message: null
+      })
+    );
+  }),
+  // update work times
   rest.put(
     backendPath('/work-tracking'),
     (req: Record<string, any>, res, ctx) => {

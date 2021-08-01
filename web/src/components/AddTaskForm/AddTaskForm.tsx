@@ -1,10 +1,12 @@
 import React from 'react';
-import { Form } from 'react-bulma-components';
+import { Form, Button } from 'react-bulma-components';
 
 import { Task } from '../../interfaces';
 
 interface AddTaskFormProps {
   tasks: Task[];
+  handleAddTask: (taskName: string) => void;
+  handleActivateTask: (taskName: string) => void;
 }
 
 const AddTaskForm = (props: AddTaskFormProps) => {
@@ -20,9 +22,19 @@ const AddTaskForm = (props: AddTaskFormProps) => {
     return null;
   });
 
+  function handleAddTaskSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    props.handleAddTask(taskName);
+  }
+
+  function handleActivateTaskSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    props.handleActivateTask(taskName);
+  }
+
   return (
     <>
-      <form>
+      <form onSubmit={handleAddTaskSubmit}>
         <Form.Field>
           <Form.Label htmlFor="task-name">Task Name</Form.Label>
           <Form.Control>
@@ -34,18 +46,18 @@ const AddTaskForm = (props: AddTaskFormProps) => {
             />
           </Form.Control>
         </Form.Field>
-        {/* <Form.Radio name='add-activate-toggle'>
 
-        </Form.Radio>
-        <Form.Radio name='add-activate-toggle'>
+        <Button type="submit">Add New Task</Button>
+      </form>
 
-        </Form.Radio> */}
-
+      <form onSubmit={handleActivateTaskSubmit}>
         <Form.Field>
           <Form.Control>
             <Form.Select>{inactiveTaskOptions}</Form.Select>
           </Form.Control>
         </Form.Field>
+
+        <Button type="submit">Add Existing Task</Button>
       </form>
     </>
   );

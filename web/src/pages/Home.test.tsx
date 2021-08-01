@@ -51,3 +51,25 @@ test('should save change made to time table cell', async () => {
   const editedCell = await screen.findByRole('cell', { name: /2080/i });
   expect(editedCell).toBeInTheDocument();
 });
+
+test('should render task addition modal', async () => {
+  renderHomePage();
+  const modalButton = await screen.findByRole('button', { name: /add task/i });
+  userEvent.click(modalButton);
+  const field = await screen.findByLabelText(/task name/i);
+  expect(field).toBeInTheDocument();
+});
+
+test('should add new task via task addition modal', async () => {
+  renderHomePage();
+  const modalButton = await screen.findByRole('button', { name: /add task/i });
+  userEvent.click(modalButton);
+  const field = await screen.findByLabelText(/task name/i);
+  userEvent.type(field, 'my-new-task');
+  const addButton = screen.getByRole('button', { name: /add new task/i });
+  userEvent.click(addButton);
+
+  expect(
+    await screen.findByRole('cell', { name: /my-new-task/i })
+  ).toBeInTheDocument();
+});
