@@ -28,7 +28,7 @@ const LoginForm = (props: LoginFormProps) => {
     const success = await props.handleLogin(username, password);
     // optimally, the async request would be cancelable instead of tracking mount, but for now it's fine
     // https://reactjs.org/blog/2015/12/16/ismounted-antipattern.html
-    if (mounted.current === true) {
+    if (mounted.current) {
       if (!success) {
         setError('Invalid login or password.');
       } else {

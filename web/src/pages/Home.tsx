@@ -11,9 +11,12 @@ import {
 } from 'react-bulma-components';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import WorkTimeTable from '../components/WorkTimeTable/WorkTimeTable';
+import TitledModal from '../components/TitledModal/TitledModal';
+import AddTaskForm from '../components/AddTaskForm/AddTaskForm';
+import RemoveTaskForm from '../components/RemoveTaskForm/RemoveTaskForm';
 import { getLastSunday } from '../helpers';
 import { AUTH_TOKEN } from '../constants';
-import { APIWorkTimeData } from '../interfaces';
+import { APIWorkTimeData, Task } from '../interfaces';
 
 const WORK_TIME_QUERY = 'workTimeData';
 const TASK_LIST_QUERY = 'taskListData';
@@ -23,6 +26,27 @@ const Home = () => {
   const [startDate, setStartDate] = React.useState(getLastSunday());
   // user-edited times on the table which can then be POSTed
   const [editedTimes, setEditedTimes] = React.useState<APIWorkTimeData>({});
+  // toggles for showing modals
+  const [showAddTask, setShowAddTask] = React.useState(false);
+  const [showRemoveTask, setShowRemoveTask] = React.useState(false);
+
+  const mounted = React.useRef(false);
+
+  React.useEffect(() => {
+    // track whether component is mounted
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  function showAddTaskModal() {
+    setShowAddTask(true);
+  }
+
+  function showRemoveTaskModal() {
+    setShowRemoveTask(true);
+  }
 
   // work time api query
   const workTimeQuery = useQuery(WORK_TIME_QUERY, async () => {
@@ -77,7 +101,58 @@ const Home = () => {
       onSuccess: () => {
         // reset work time data to reflect posted data
         queryClient.invalidateQueries(WORK_TIME_QUERY);
-        setEditedTimes({});
+
+        if (mounted.current) {
+          setEditedTimes({});
+        }
+      }
+    }
+  );
+
+  // add new task
+  const addTaskMutation = useMutation(
+    async (taskName: string) => {
+      const requestURL = process.env.REACT_APP_BACKEND_API + '/task';
+
+      await fetch(requestURL, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + localStorage.getItem(AUTH_TOKEN)
+        },
+        body: JSON.stringify({ name: taskName })
+      });
+    },
+    {
+      onSuccess: () => {
+        // reflect new task data
+        queryClient.invalidateQueries(TASK_LIST_QUERY);
+      }
+    }
+  );
+
+  // set task active/inactive
+  const taskActiveMutation = useMutation(
+    async (task: Task) => {
+      const requestURL =
+        process.env.REACT_APP_BACKEND_API +
+        ('/task/' + encodeURIComponent(task.name));
+
+      await fetch(requestURL, {
+        method: 'PATCH',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + localStorage.getItem(AUTH_TOKEN)
+        },
+        body: JSON.stringify({ active: task.active })
+      });
+    },
+    {
+      onSuccess: () => {
+        // reflect new task data
+        queryClient.invalidateQueries(TASK_LIST_QUERY);
       }
     }
   );
@@ -140,8 +215,54 @@ const Home = () => {
         >
           Save Changes
         </Button>
+
+        <TitledModal
+          show={showAddTask}
+          onClose={() => {
+            setShowAddTask(false);
+          }}
+          children={
+            <AddTaskForm
+              handleAddTask={handleAddTask}
+              handleActivateTask={handleActivateTask}
+              tasks={taskListQuery.data['data']}
+            />
+          }
+          title="Add Task"
+        />
+        <Button onClick={showAddTaskModal}>Add Task</Button>
+
+        <TitledModal
+          show={showRemoveTask}
+          onClose={() => {
+            setShowRemoveTask(false);
+          }}
+          children={
+            <RemoveTaskForm
+              handleRemoveTask={handleRemoveTask}
+              tasks={taskListQuery.data['data']}
+            />
+          }
+          title="Add Task"
+        />
+        <Button onClick={showRemoveTaskModal}>Remove Task</Button>
       </>
     );
+  }
+
+  function handleAddTask(taskName: string) {
+    addTaskMutation.mutate(taskName);
+    setShowAddTask(false);
+  }
+
+  function handleActivateTask(taskName: string) {
+    taskActiveMutation.mutate({ name: taskName, active: true });
+    setShowAddTask(false);
+  }
+
+  function handleRemoveTask(taskName: string) {
+    taskActiveMutation.mutate({ name: taskName, active: false });
+    setShowRemoveTask(false);
   }
 
   return (
