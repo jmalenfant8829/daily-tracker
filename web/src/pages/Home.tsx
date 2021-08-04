@@ -14,6 +14,7 @@ import WorkTimeTable from '../components/WorkTimeTable/WorkTimeTable';
 import TitledModal from '../components/TitledModal/TitledModal';
 import AddTaskForm from '../components/AddTaskForm/AddTaskForm';
 import RemoveTaskForm from '../components/RemoveTaskForm/RemoveTaskForm';
+import WeekSelector from '../components/WeekSelector/WeekSelector';
 import { getLastSunday } from '../helpers';
 import { AUTH_TOKEN } from '../constants';
 import { APIWorkTimeData, Task } from '../interfaces';
@@ -49,23 +50,26 @@ const Home = () => {
   }
 
   // work time api query
-  const workTimeQuery = useQuery(WORK_TIME_QUERY, async () => {
-    // e.g. http://localhost/work-tracking/2021/4/20
-    const requestURL =
-      process.env.REACT_APP_BACKEND_API +
-      ('/work-tracking/' + startDate.getFullYear() + '/') +
-      (startDate.getMonth() + 1 + '/' + startDate.getDate());
+  const workTimeQuery = useQuery(
+    [WORK_TIME_QUERY, { date: startDate }],
+    async () => {
+      // e.g. http://localhost/work-tracking/2021/4/20
+      const requestURL =
+        process.env.REACT_APP_BACKEND_API +
+        ('/work-tracking/' + startDate.getFullYear() + '/') +
+        (startDate.getMonth() + 1 + '/' + startDate.getDate());
 
-    const res = await fetch(requestURL, {
-      headers: { Authorization: 'Bearer ' + localStorage.getItem(AUTH_TOKEN) }
-    });
+      const res = await fetch(requestURL, {
+        headers: { Authorization: 'Bearer ' + localStorage.getItem(AUTH_TOKEN) }
+      });
 
-    if (!res.ok) {
-      throw new Error('Error retrieving table data');
+      if (!res.ok) {
+        throw new Error('Error retrieving table data');
+      }
+
+      return res.json();
     }
-
-    return res.json();
-  });
+  );
 
   // task list api query
   const taskListQuery = useQuery(TASK_LIST_QUERY, async () => {
@@ -86,7 +90,6 @@ const Home = () => {
   const workTimeMutation = useMutation(
     async (workTimes: APIWorkTimeData) => {
       const requestURL = process.env.REACT_APP_BACKEND_API + '/work-tracking';
-
       await fetch(requestURL, {
         method: 'PUT',
         headers: {
@@ -100,7 +103,7 @@ const Home = () => {
     {
       onSuccess: () => {
         // reset work time data to reflect posted data
-        queryClient.invalidateQueries(WORK_TIME_QUERY);
+        queryClient.invalidateQueries([WORK_TIME_QUERY, { date: startDate }]);
 
         if (mounted.current) {
           setEditedTimes({});
@@ -268,6 +271,12 @@ const Home = () => {
   return (
     <Container>
       <Heading>Weekly Time Tracking</Heading>
+      <WeekSelector
+        startDate={startDate}
+        handleWeekSelect={(date: Date) => {
+          setStartDate(date);
+        }}
+      />
       {timetableContent}
     </Container>
   );
