@@ -68,5 +68,5 @@ def test_timetable_fails_recording_time_given_negative_time(timetable, work_time
     time recording does not pass validation
     """
     with pytest.raises(ValueError):
-        work_times[date(2021, 3, 20)]["task1"]["minutes_spent"] = -20
+        work_times["task1"][0]["minutes_spent"] = -20
         timetable.record_work_time(work_times)

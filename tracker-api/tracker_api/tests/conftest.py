@@ -40,17 +40,8 @@ def work_times():
     day = date(2021, 3, 20)
 
     work_times = {
-        day: {
-            "task1": {
-                "minutes_spent": 40,
-            }
-        },
-        day
-        + timedelta(days=1): {
-            "task2": {
-                "minutes_spent": 20,
-            },
-        },
+        "task1": [{"date": day, "minutes_spent": 40}],
+        "task2": [{"date": day + timedelta(days=1), "minutes_spent": 20}],
     }
 
     return work_times

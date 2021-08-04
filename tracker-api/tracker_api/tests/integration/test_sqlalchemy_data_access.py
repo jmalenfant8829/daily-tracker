@@ -66,9 +66,7 @@ def test_update_work_times(db, work_times, data_access, user):
 
     # update time spent for one of the work times
     updated_time = {
-        day1: {
-            task1.name: {"minutes_spent": 200},
-        },
+        task1.name: [{"date": day1, "minutes_spent": 200}],
     }
 
     data_access.record_work_time(user, updated_time)
@@ -77,7 +75,7 @@ def test_update_work_times(db, work_times, data_access, user):
     assert DailyTaskTimeModel.query.filter_by(day=day1).first().minutes_spent == 200
     assert (
         DailyTaskTimeModel.query.filter_by(day=day2).first().minutes_spent
-        == work_times[day2][task2.name]["minutes_spent"]
+        == work_times[task2.name][0]["minutes_spent"]
     )
 
 
@@ -155,8 +153,8 @@ def test_query_work_week(db, data_access, user, work_times):
     data_access.commit()
 
     recorded_time = data_access.work_week(user=user, start=day)
-    assert recorded_time[day]["task1"]["minutes_spent"] == 40
-    assert recorded_time[day + timedelta(days=1)]["task2"]["minutes_spent"] == 20
+    assert recorded_time["task1"][0]["minutes_spent"] == 40
+    assert recorded_time["task2"][0]["minutes_spent"] == 20
 
 
 def test_get_user_by_username(db, data_access, user):
