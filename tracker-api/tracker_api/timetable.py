@@ -20,13 +20,14 @@ class Timetable:
         """
         Records time spent on tasks as long as input is valid
         """
-        # before saving, validate work dict is in correct format (days -> tasks -> time spent)
+        # before saving, validate work dict is in correct format (tasks -> date, time spent)
         try:
-            for day, tasks in work.items():
-                for task, task_info in tasks.items():
-                    if task_info["minutes_spent"] < 0:
+            for task_name, task_times in work.items():
+                for task_time in task_times:
+                    if task_time["minutes_spent"] < 0:
                         raise ValueError("Minutes spent cannot be negative")
-        except (KeyError, AttributeError):
+                    date = task_time["date"]
+        except (KeyError, TypeError, AttributeError):
             raise ValueError("Work time input is not formatted properly")
 
         self.data_access.record_work_time(user=self.user, work=work)

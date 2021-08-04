@@ -36,9 +36,8 @@ def auth_token(app, db, cli, user):
 def task_timetable(app, user, work_times, auth_token):
     """empty timetable with tasks created for it"""
     timetable = Timetable(user, user.data_access)
-    for _, task_dict in work_times.items():
-        for task, _ in task_dict.items():
-            timetable.add_task(task)
+    for task_name, _ in work_times.items():
+        timetable.add_task(task_name)
 
     return timetable
 
@@ -77,11 +76,8 @@ def test_get_work_week(db, cli, auth_token, recorded_timetable):
     json = res.get_json()
     assert res.status_code == 200
     assert json["status"] == "success"
-
-    day = date(2021, 3, 20).isoformat()
-    next_day = date(2021, 3, 21).isoformat()
-    assert json["data"][day]["task1"]["minutes_spent"] == 40
-    assert json["data"][next_day]["task2"]["minutes_spent"] == 20
+    assert json["data"]["task1"][0]["minutes_spent"] == 40
+    assert json["data"]["task2"][0]["minutes_spent"] == 20
 
 
 def test_work_week_bad_date_input(db, cli, auth_token, recorded_timetable):
@@ -184,8 +180,8 @@ def test_record_work_time(db, cli, auth_token, task_timetable, work_times):
     )
     day = date(2021, 3, 20).isoformat()
     next_day = date(2021, 3, 21).isoformat()
-    assert json_data[day]["task1"]["minutes_spent"] == 40
-    assert json_data[next_day]["task2"]["minutes_spent"] == 20
+    assert json_data["task1"][0]["minutes_spent"] == 40
+    assert json_data["task2"][0]["minutes_spent"] == 20
 
 
 def test_fail_record_work_times_given_invalid_json(db, cli, auth_token, task_timetable):

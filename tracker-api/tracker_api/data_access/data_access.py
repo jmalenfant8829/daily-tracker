@@ -9,6 +9,7 @@ from datetime import date, timedelta
 from collections import defaultdict
 from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import SQLAlchemyError
+from datetime import datetime
 
 from tracker_api.data_access.sqlalchemy import (
     UserModel,
@@ -75,13 +76,19 @@ class SQLAlchemyDataAccess:
             .filter_by(username=user.username)
         )
 
-        # build dictionary from query results
+        # build response from query results
         nested_dict = lambda: defaultdict(nested_dict)
-        work_times = nested_dict()
-        for work_time in work_times_query:
-            work_times[work_time.day][work_time.task.name][
-                "minutes_spent"
-            ] = work_time.minutes_spent
+        work_times = {}
+        for result in work_times_query:
+            if work_times.get(result.task.name, None) is None:
+                work_times[result.task.name] = []
+
+            work_times[result.task.name].append(
+                {
+                    "date": result.day,
+                    "minutes_spent": result.minutes_spent,
+                }
+            )
 
         return work_times
 
@@ -102,20 +109,23 @@ class SQLAlchemyDataAccess:
             raise ValueError('User "' + user.username + '" not found')
 
         # record each task time record specified as long the task exists
-        for day, tasks in work.items():
-            for task_name, values in tasks.items():
+        for task_name, task_times in work.items():
+            for task_time in task_times:
                 try:
                     task_index = [t.name for t in db_user.tasks].index(task_name)
                     db_task = db_user.tasks[task_index]
                     try:
                         # attempt updating existing record
-                        task_time_index = [t.day for t in db_task.task_times].index(day)
+                        task_time_index = [t.day for t in db_task.task_times].index(
+                            task_time["date"]
+                        )
                         db_task_time = db_task.task_times[task_time_index]
-                        db_task_time.minutes_spent = values["minutes_spent"]
+                        db_task_time.minutes_spent = task_time["minutes_spent"]
                     except ValueError:
                         # record does not yet exist; create it
                         db_task_time = DailyTaskTimeModel(
-                            day=day, minutes_spent=values["minutes_spent"]
+                            day=task_time["date"],
+                            minutes_spent=task_time["minutes_spent"],
                         )
                         db_task.task_times.append(db_task_time)
                 except ValueError:
