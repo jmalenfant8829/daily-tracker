@@ -60,6 +60,30 @@ const App = () => {
     return loginSuccessful;
   }
 
+  async function signUpUser(username: string, password: string) {
+    let successfulSignup = false;
+    try {
+      const res = await fetch(process.env.REACT_APP_BACKEND_API + '/register', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username: username, password: password })
+      });
+
+      if (res.status === 200) {
+        successfulSignup = true;
+        // todo: handle login failure - shouldn't happen after registration, but still important
+        await logInUser(username, password);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+
+    return successfulSignup;
+  }
+
   // render homepage if logged in, landing if not
   let pageContent;
   if (user) {
@@ -69,7 +93,7 @@ const App = () => {
       </QueryClientProvider>
     );
   } else {
-    pageContent = <Landing handleLogin={logInUser} />;
+    pageContent = <Landing handleLogin={logInUser} handleSignup={signUpUser} />;
   }
 
   return (
