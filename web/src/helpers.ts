@@ -9,3 +9,9 @@ export function getLastSunday(date?: Date) {
   sunday.setDate(givenDate.getDate() - givenDate.getDay());
   return sunday;
 }
+
+export function addDays(date: Date, days: number) {
+  var result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
