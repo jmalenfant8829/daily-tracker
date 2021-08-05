@@ -125,3 +125,22 @@ def register():
         }, 400
 
     return {"status": "success", "data": None, "message": None}, 200
+
+@auth_bp.route("/refresh-token", methods=["POST"])
+@jwt_token_required
+def refresh_token(username):
+    """refreshes an access token based on a previous token"""
+    try:
+        user = User(username, current_app.config["DATA_ACCESS"]())
+        token = user.generate_auth_token(current_app.config["SECRET_KEY"])
+        return {
+            "status": "success",
+            "data": {"token": token},
+            "message": None,
+        }, 200
+    except ValueError as e:
+        return {
+            "status": "error",
+            "data": None,
+            "message": str(e),
+        }, 400
