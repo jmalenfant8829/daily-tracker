@@ -5,12 +5,13 @@
 import React from 'react';
 import 'bulma/css/bulma.min.css';
 import { Button, Columns, Heading, Container } from 'react-bulma-components';
-import SignupModal from '../components/SignupModal/SignupModal';
+import SignupForm from '../components/SignupForm/SignupForm';
 import TitledModal from '../components/TitledModal/TitledModal';
 import LoginForm from '../components/LoginForm/LoginForm';
 
 interface LandingProps {
   handleLogin: (username: string, password: string) => Promise<boolean>;
+  handleSignup: (username: string, password: string) => Promise<boolean>;
 }
 
 const Landing = (props: LandingProps) => {
@@ -41,11 +42,13 @@ const Landing = (props: LandingProps) => {
         </Columns.Column>
       </Columns>
 
-      <SignupModal
+      <TitledModal
         show={showSignup}
         onClose={() => {
           setShowSignup(false);
         }}
+        children={<SignupForm handleSignup={props.handleSignup} />}
+        title="Register"
       />
 
       <TitledModal

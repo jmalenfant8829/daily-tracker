@@ -66,7 +66,7 @@ def test_update_work_times(db, work_times, data_access, user):
 
     # update time spent for one of the work times
     updated_time = {
-        task1.name: [{"date": day1, "minutes_spent": 200}],
+        task1.name: [{"date": str(day1), "minutes_spent": 200}],
     }
 
     data_access.record_work_time(user, updated_time)

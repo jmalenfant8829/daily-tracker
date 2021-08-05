@@ -77,7 +77,6 @@ class SQLAlchemyDataAccess:
         )
 
         # build response from query results
-        nested_dict = lambda: defaultdict(nested_dict)
         work_times = {}
         for result in work_times_query:
             if work_times.get(result.task.name, None) is None:
@@ -112,12 +111,14 @@ class SQLAlchemyDataAccess:
         for task_name, task_times in work.items():
             for task_time in task_times:
                 try:
+                    asdf = [t.name for t in db_user.tasks]
                     task_index = [t.name for t in db_user.tasks].index(task_name)
                     db_task = db_user.tasks[task_index]
                     try:
+                        ffff = [str(t.day) for t in db_task.task_times]
                         # attempt updating existing record
-                        task_time_index = [t.day for t in db_task.task_times].index(
-                            task_time["date"]
+                        task_time_index = [str(t.day) for t in db_task.task_times].index(
+                            str(task_time["date"])
                         )
                         db_task_time = db_task.task_times[task_time_index]
                         db_task_time.minutes_spent = task_time["minutes_spent"]

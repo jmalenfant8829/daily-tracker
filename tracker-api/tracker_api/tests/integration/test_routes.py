@@ -5,7 +5,6 @@ from faker import Faker
 from datetime import date, timedelta
 from tracker_api.user import User
 from tracker_api.timetable import Timetable
-from tracker_api.helpers import date_keys_to_strings
 
 faker = Faker()
 
@@ -48,6 +47,15 @@ def recorded_timetable(user, work_times, task_timetable):
     task_timetable.record_work_time(work_times)
     return task_timetable
 
+@pytest.fixture
+def date_string_work_times(work_times):
+    """ returns work times with the dates transformed into strings"""
+    transformed_work_times = work_times
+    # turn all date values into strings
+    for task_name, task_times in transformed_work_times.items():
+        for task_time in task_times:
+            task_time["date"] = str(task_time["date"])
+    return transformed_work_times
 
 def test_404_returns_json_error_response(cli):
     """
@@ -156,7 +164,7 @@ def test_do_not_add_new_task_with_missing_json_data(db, cli, auth_token):
     assert res.status_code == 400
 
 
-def test_record_work_time(db, cli, auth_token, task_timetable, work_times):
+def test_record_work_time(db, cli, auth_token, task_timetable, date_string_work_times):
     """
     given existing user with tasks
     when recording time spent on tasks
@@ -165,7 +173,7 @@ def test_record_work_time(db, cli, auth_token, task_timetable, work_times):
     res = cli.put(
         "/work-tracking",
         headers={"Authorization": "Bearer " + auth_token},
-        json=date_keys_to_strings(work_times),
+        json=date_string_work_times,
     )
     assert res.status_code == 200
 
@@ -178,8 +186,6 @@ def test_record_work_time(db, cli, auth_token, task_timetable, work_times):
         .get_json()
         .get("data")
     )
-    day = date(2021, 3, 20).isoformat()
-    next_day = date(2021, 3, 21).isoformat()
     assert json_data["task1"][0]["minutes_spent"] == 40
     assert json_data["task2"][0]["minutes_spent"] == 20
 
@@ -188,7 +194,7 @@ def test_fail_record_work_times_given_invalid_json(db, cli, auth_token, task_tim
     res = cli.put(
         "/work-tracking",
         headers={"Authorization": "Bearer " + auth_token},
-        json=date_keys_to_strings({"asdf": "asdfasdf"}),  # invalid format
+        json={"asdf": "asdfasdf"},  # invalid format
     )
     assert res.status_code == 400
 

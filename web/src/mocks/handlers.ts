@@ -45,6 +45,17 @@ const invalidTokenResponse = (res: ResponseComposition, ctx: RestContext) => {
 };
 
 export const handlers = [
+  // register
+  rest.post(backendPath('/register'), (req: Record<string, any>, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json({
+        status: 'success',
+        data: null,
+        message: null
+      })
+    );
+  }),
   // get api token
   rest.post(backendPath('/token'), (req: Record<string, any>, res, ctx) => {
     const username = req.body.username;

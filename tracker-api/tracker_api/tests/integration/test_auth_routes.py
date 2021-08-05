@@ -106,6 +106,30 @@ def test_get_auth_token(app, db, cli):
     assert res.get_json().get("data").get("token") != None
     assert res.status_code == 200
 
+def test_refresh_auth_token(app, db, cli):
+    """
+    given existing user and auth token
+    when using auth token to refresh token
+    then new token  will be received
+    """
+    username, password = "testuser", "testpassword"
+    cli.post(
+        "/register",
+        json={"username": username, "password": password},
+    )
+
+    token = cli.post(
+        "/token",
+        json={"username": username, "password": password},
+    ).get_json().get("data").get("token")
+
+    res = cli.post(
+        "/refresh-token",
+        headers={"Authorization": "Bearer " + token},
+    )
+
+    assert res.get_json().get("data").get("token") != None
+    assert res.status_code == 200
 
 def test_fail_get_auth_token_given_wrong_password(app, db, cli):
     """

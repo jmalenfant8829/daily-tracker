@@ -15,3 +15,11 @@ export function addDays(date: Date, days: number) {
   result.setDate(result.getDate() + days);
   return result;
 }
+
+// handle api response error
+export default function handleErrors(response: Response) {
+  if (!response.ok) {
+    throw Error(response.statusText);
+  }
+  return response;
+}

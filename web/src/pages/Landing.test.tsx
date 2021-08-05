@@ -8,10 +8,15 @@ import userEvent from '@testing-library/user-event';
 import Landing from './Landing';
 
 const renderLanding = () => {
-  const handleLogin = async (username: string, password: string) => {
+  const handleLogin = async (u: string, p: string) => {
     return true;
   };
-  return render(<Landing handleLogin={handleLogin} />);
+  const handleSignup = async (u: string, p: string) => {
+    return true;
+  };
+  return render(
+    <Landing handleLogin={handleLogin} handleSignup={handleSignup} />
+  );
 };
 
 test('landing page renders', () => {
