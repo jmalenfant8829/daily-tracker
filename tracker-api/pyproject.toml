@@ -15,6 +15,7 @@ pytest = "^6.2.4"
 requests = "^2.25.1"
 Faker = "^8.6.0"
 PyJWT = "^2.1.0"
+Flask-Cors = "^3.0.10"
 
 [tool.poetry.dev-dependencies]
 

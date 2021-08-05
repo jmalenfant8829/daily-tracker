@@ -6,7 +6,6 @@ from .err_msgs import *
 
 auth_bp = Blueprint("auth", __name__)
 
-
 def json_data_required(f):
     """route decorator requiring json data in request body"""
 

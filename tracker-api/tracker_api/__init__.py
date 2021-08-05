@@ -2,6 +2,7 @@ from flask import Flask
 from flask.json import JSONEncoder
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_cors import CORS
 from datetime import date
 from tracker_api.config import Config
 from tracker_api.routes.work_tracking import work_tracking_bp
@@ -14,6 +15,7 @@ migrate = Migrate()
 
 def create_app(config_class=Config):
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object(config_class)
 
     # initialize db

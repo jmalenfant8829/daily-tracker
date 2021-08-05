@@ -5,12 +5,10 @@ from flask import Blueprint, current_app, request
 from tracker_api.data_access.exc import DataAccessError
 from tracker_api.user import User
 from tracker_api.timetable import Timetable, Task
-from tracker_api.helpers import date_keys_to_strings
 from tracker_api.routes.auth import jwt_token_required, json_data_required
 from .err_msgs import *
 
 work_tracking_bp = Blueprint("work-tracking", __name__)
-
 
 @work_tracking_bp.route("/work-tracking", methods=["PUT"])
 @jwt_token_required
@@ -134,9 +132,14 @@ def work_week(
             "message": DATA_RETRIEVAL_ERR_MSG,
         }, 500
 
+    # turn all date values into strings
+    for task_name, task_times in recorded_times.items():
+        for task_time in task_times:
+            task_time["date"] = str(task_time["date"])
+
     return {
         "status": "success",
-        "data": date_keys_to_strings(recorded_times),
+        "data": recorded_times,
         "message": None,
     }, 200
 
