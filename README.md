@@ -2,11 +2,11 @@
 
 # Daily Tracker
 
-Daily activity tracking app by Julien Malenfant.
+Daily activity tracking app by Julien Malenfant
 
-## TODO
-- Add work tracking functionality to web frontend
-- Improve README (installation instructions, etc.)
+## Installation Instructions
+
+TODO
 
 ## Potential Future Features
 - Integrated Pomodoro timer
